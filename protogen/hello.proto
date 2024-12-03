@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package protogen;
+
+// import "google/protobuf/any.proto";
+
+option go_package = "./protogen";
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloResponse {
+    string message = 1;
+}

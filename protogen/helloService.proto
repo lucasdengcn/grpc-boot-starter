@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package protogen;
+
+option go_package = "./protogen";
+
+import "protogen/hello.proto";
+
+service HelloService {
+    rpc SayHello (HelloRequest) returns (HelloResponse);
+}
+
