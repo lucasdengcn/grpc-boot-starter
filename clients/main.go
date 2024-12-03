@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"grpc-example/protogen"
+	"grpc-boot-starter/protogen"
 	"log"
 	"time"
 
