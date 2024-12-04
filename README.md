@@ -17,15 +17,15 @@
 |--------|--------|--------|
 |Authentication| - |-|
 |Configuration | Yaml, Viper | OK |
-|Gorm|PostgreSQL|-|
+|Gorm|PostgreSQL|OK|
 |Interceptor|-|-|
 |Metrics|-|-|
 |Tracing|-|-|
 |Validation|-|-|
 |Error Handling|-|-|
 |Error Model| Google Richer Error model| OK |
-|Load balancing|-|-|
-|Health check|-|-|
+|Load balancing|client side| OK |
+|Health check|GRPC|OK|
 |Retry|-|-|
 |Service Config|-|-|
 |Profiling|-|-|
@@ -34,10 +34,12 @@
 |Cache|-|-|
 |Messaging|-|-|
 |Distributed|-|-|
-|Testing|-|-|
+|Testing|testify|OK|
 |Flow Control|-|-|
 |API Versioning|-|-|
 |DB Migration|schema migration| OK |
+|Repository|-|OK|
+|CDI| wire | OK |
 
 ## Reference
 

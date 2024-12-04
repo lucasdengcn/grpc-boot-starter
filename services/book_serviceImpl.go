@@ -65,6 +65,7 @@ func (s *BookServiceServerImpl) GetBook(ctx context.Context, in *protogen.BookGe
 
 // CreateBook to create book via input
 func (s *BookServiceServerImpl) CreateBook(ctx context.Context, in *protogen.BookCreateInput) (*protogen.BookInfo, error) {
+	logging.Info(ctx).Msgf("CreateBook criteria: %v", in)
 	book := &entity.Book{
 		Title:       in.Title,
 		Description: in.Description,
@@ -83,6 +84,7 @@ func (s *BookServiceServerImpl) CreateBook(ctx context.Context, in *protogen.Boo
 }
 
 func (s *BookServiceServerImpl) UpdateBook(ctx context.Context, in *protogen.BookUpdateInput) (*protogen.BookInfo, error) {
+	logging.Info(ctx).Msgf("UpdateBook criteria: %v", in)
 	book := &entity.Book{
 		Model: gorm.Model{
 			ID: uint(in.Id),
@@ -109,6 +111,7 @@ func (s *BookServiceServerImpl) UpdateBook(ctx context.Context, in *protogen.Boo
 
 // DeleteBook to delete book via id
 func (s *BookServiceServerImpl) DeleteBook(ctx context.Context, in *protogen.BookDeleteInput) (*protogen.BookDeleteResponse, error) {
+	logging.Info(ctx).Msgf("DeleteBook criteria: %v", in)
 	ok, err := s.bookRepository.Delete(ctx, in.Id)
 	if err != nil {
 		logging.Error(ctx).Err(err).Msgf("DeleteBook Error. id:%v", in.Id)
@@ -123,6 +126,7 @@ func (s *BookServiceServerImpl) DeleteBook(ctx context.Context, in *protogen.Boo
 // QueryBooks to find books via input criteria
 func (s *BookServiceServerImpl) QueryBooks(ctx context.Context, in *protogen.BookQueryInput) (*protogen.BookInfoListResponse, error) {
 	// prepare query criteria
+	logging.Info(ctx).Msgf("QueryBooks criteria: %v", in)
 	var status int32
 	var category int32
 	var err error
@@ -147,7 +151,7 @@ func (s *BookServiceServerImpl) QueryBooks(ctx context.Context, in *protogen.Boo
 	}
 	// processing pagination
 	totalPages := count / in.PageSize
-	if count%totalPages > 0 {
+	if count%in.PageSize > 0 {
 		totalPages += 1
 	}
 	if bookList == nil {

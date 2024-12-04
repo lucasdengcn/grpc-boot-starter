@@ -4,7 +4,7 @@ app:
   profile: default
 
 server:
-  port: 50051
+  port: 50052
   options:
     key1: value1
 

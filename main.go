@@ -8,6 +8,7 @@ import (
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/migration"
 	"grpc-boot-starter/protogen"
+	"grpc-boot-starter/server"
 	"grpc-boot-starter/services"
 	"net"
 	"os"
@@ -56,13 +57,16 @@ func main() {
 		db.Close()
 		log.Fatal().Err(err).Msgf("failed to listen: %v", config.GetConfig().Server.Port)
 	}
+	log.Info().Msgf("Listen at port: %v", config.GetConfig().Server.Port)
 	//
 	grpcServer := grpc.NewServer()
 	//
 	services.RegisterHealthService(grpcServer)
 	// hook services
-	protogen.RegisterBookServiceServer(grpcServer, InitializeBookService())
-	protogen.RegisterHelloServiceServer(grpcServer, InitializeHelloService())
+	protogen.RegisterBookServiceServer(grpcServer, server.InitializeBookService())
+	protogen.RegisterHelloServiceServer(grpcServer, server.InitializeHelloService())
+	//
+	services.SetServerServing()
 	//
 	grpcServer.Serve(lis)
 	//

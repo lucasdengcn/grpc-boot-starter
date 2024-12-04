@@ -27,10 +27,10 @@ func main() {
 	r.InitialState(resolver.State{
 		Addresses: []resolver.Address{
 			{Addr: "localhost:50051"},
-			{Addr: "localhost:50051"},
+			{Addr: "localhost:50052"},
 		},
 	})
-
+	//
 	address := fmt.Sprintf("%s:///unused", r.Scheme())
 	//
 	options := []grpc.DialOption{
@@ -46,9 +46,25 @@ func main() {
 	defer conn.Close()
 
 	// create a new service client
-	client := protogen.NewHelloServiceClient(conn)
+	helloServiceClient := protogen.NewHelloServiceClient(conn)
+	callHelloService(helloServiceClient)
+	//
+	bookServiceClient := protogen.NewBookServiceClient(conn)
+	//
+	for i := 0; i < 10; i++ {
+		go func() {
+			bookInfo := callBookCreateService(bookServiceClient)
+			callBookUpdateService(bookServiceClient, bookInfo)
+			callBookQueryService(bookServiceClient)
+		}()
+	}
+	//
+	for {
+		time.Sleep(10 * time.Second)
+	}
+}
 
-	// call the service method
+func callHelloService(client protogen.HelloServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	resp, err := client.SayHello(ctx, &protogen.HelloRequest{Name: "Lucas"})
@@ -56,7 +72,67 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println(resp)
-	for {
-		time.Sleep(time.Second)
+}
+
+func callBookCreateService(client protogen.BookServiceClient) *protogen.BookInfo {
+	// Create a Book
+	bookCreateInput := &protogen.BookCreateInput{
+		Title:       "Book A",
+		Description: "This is Book A",
+		Amount:      100,
+		Price:       10.0,
+		Category:    protogen.BookCategory_BOOK_CATEGORY_JAVA,
+		Author: &protogen.Author{
+			Name: "Author J",
+		},
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	//
+	bookInfo, err := client.CreateBook(ctx, bookCreateInput)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("book create: %v\n", bookInfo)
+	return bookInfo
+}
+
+func callBookUpdateService(client protogen.BookServiceClient, book *protogen.BookInfo) {
+	// Update a Book
+	input := &protogen.BookUpdateInput{
+		Id:          book.Id,
+		Title:       "Math Book C updated",
+		Description: "This is Math Book C",
+		Amount:      110,
+		Price:       12.0,
+		Category:    protogen.BookCategory_BOOK_CATEGORY_MATH,
+		Author: &protogen.Author{
+			Name: "Author J",
+		},
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	//
+	resp, err := client.UpdateBook(ctx, input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("book update: %v\n", resp)
+}
+
+func callBookQueryService(client protogen.BookServiceClient) {
+	// Update a Book
+	input := &protogen.BookQueryInput{
+		Status:    protogen.BookStatus_BOOK_STATUS_ACTIVE.Enum(),
+		PageSize:  10,
+		PageIndex: 1,
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	//
+	resp, err := client.QueryBooks(ctx, input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("book query: %v\n", resp)
 }
