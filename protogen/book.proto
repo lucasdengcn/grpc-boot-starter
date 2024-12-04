@@ -50,6 +50,7 @@ message BookDeleteInput {
 
 message BookDeleteResponse {
     uint32 id = 1;
+    bool success = 2;
 }
 
 message BookGetInput {
@@ -57,12 +58,12 @@ message BookGetInput {
 }
 
 message BookQueryInput {
-    BookCategory category = 1;
-    BookStatus status = 2;
+    optional BookCategory category = 1;
+    optional BookStatus status = 2;
     //
     uint32 page_size = 3;
     uint32 page_index = 4;
-    uint32 cursor_id = 5;
+    optional uint32 cursor_id = 5;
 }
 
 message BookInfo {
@@ -87,4 +88,5 @@ message BookInfoListResponse {
     uint32 total_pages = 4;
     bool has_next = 5;
     bool has_previous = 6;
+    uint32 total_items = 7;
 }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS books (
 	author VARCHAR(100) NOT NULL DEFAULT '',
 	description TEXT NOT NULL DEFAULT '',
 	price NUMERIC(10,2) NOT NULL DEFAULT 0.0,
-    category VARCHAR(100) NOT NULL,
+    category INT NOT NULL,
     amount INT NOT NULL DEFAULT 0,
     active boolean NOT NULL DEFAULT TRUE,
     status INT NOT NULL DEFAULT 0,

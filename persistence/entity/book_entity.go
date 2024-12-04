@@ -8,9 +8,9 @@ type Book struct {
 	Description string
 	Author      string
 	Price       float32
-	Category    string
-	Amount      int
+	Category    int32
+	Amount      uint32
 	Active      bool `gorm:"default:true"`
-	Status      int
+	Status      int32
 	Deleted     bool `gorm:"default:false"`
 }

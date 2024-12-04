@@ -4,15 +4,9 @@ import (
 	"context"
 	pb "grpc-boot-starter/protogen"
 	"log"
-
-	"google.golang.org/grpc"
 )
 
-func RegisterHelloService(serv *grpc.Server) {
-	pb.RegisterHelloServiceServer(serv, newHelloServiceServerImpl())
-}
-
-func newHelloServiceServerImpl() *HelloServiceServerImpl {
+func NewHelloServiceServerImpl() *HelloServiceServerImpl {
 	return &HelloServiceServerImpl{}
 }
 

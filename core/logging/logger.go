@@ -31,10 +31,18 @@ func InitLogging() {
 	log.Logger = zerolog.New(writer).With().Timestamp().Caller().Logger()
 }
 
+func With(ctx context.Context) *zerolog.Logger {
+	return log.Ctx(ctx)
+}
+
 // Get context logger
 func Get(ctx context.Context) *zerolog.Logger {
-	l := ctx.Value(loggerKey).(zerolog.Logger)
-	return &l
+	l := ctx.Value(loggerKey)
+	if l == nil {
+		return &log.Logger
+	}
+	ll := l.(zerolog.Logger)
+	return &ll
 }
 
 // Trace starts a new message with trace level.

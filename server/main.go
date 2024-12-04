@@ -7,6 +7,7 @@ import (
 	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/migration"
+	"grpc-boot-starter/protogen"
 	"grpc-boot-starter/services"
 	"net"
 	"os"
@@ -59,7 +60,9 @@ func main() {
 	grpcServer := grpc.NewServer()
 	//
 	services.RegisterHealthService(grpcServer)
-	services.RegisterHelloService(grpcServer)
+	// hook services
+	protogen.RegisterBookServiceServer(grpcServer, InitializeBookService())
+	protogen.RegisterHelloServiceServer(grpcServer, InitializeHelloService())
 	//
 	grpcServer.Serve(lis)
 	//

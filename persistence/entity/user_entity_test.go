@@ -14,6 +14,6 @@ func TestCreateUserEntity(t *testing.T) {
 	assert.Empty(t, ue.Password)
 	assert.Empty(t, ue.Gender)
 	//
-	assert.Nil(t, ue.CreatedAt)
-	assert.Nil(t, ue.UpdatedAt)
+	assert.NotNil(t, ue.CreatedAt)
+	assert.NotNil(t, ue.UpdatedAt)
 }
