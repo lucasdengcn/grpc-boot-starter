@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"grpc-boot-starter/config"
 	"grpc-boot-starter/core/logging"
-	pb "grpc-boot-starter/protogen"
+	"grpc-boot-starter/infra/db"
+	"grpc-boot-starter/migration"
 	"grpc-boot-starter/services"
 	"net"
 	"os"
@@ -18,7 +19,7 @@ import (
 
 var (
 	env = flag.String("e", "dev", "active profile, eg. dev, sit, uat, staging, prod")
-	cfg = flag.String("cfg", "dev", "config file full path")
+	cfg = flag.String("w", "dev", "working directory full path")
 )
 
 func getEnvOrFlagValue(flagValue, envVarName string) string {
@@ -30,28 +31,36 @@ func getEnvOrFlagValue(flagValue, envVarName string) string {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Println("Usage: server -cfg {path} -e {env}")
+		fmt.Println("Usage: server -w {path} -e {env}")
 		os.Exit(1)
 	}
 	flag.Parse()
 	//
 	//
 	var envName = getEnvOrFlagValue(*env, "APP_ENV")
-	var cfgPath = getEnvOrFlagValue(*cfg, "APP_CFG")
+	var workingPath = getEnvOrFlagValue(*cfg, "APP_BASE")
 	//
-	fmt.Printf("running in %v, env: %v\n", cfgPath, envName)
+	fmt.Printf("running in %v, env: %v\n", workingPath, envName)
 	// load configuration
-	config.LoadConf(cfgPath, envName)
+	config.LoadConf(workingPath, envName)
 	//
 	logging.InitLogging()
 	//
+	db.ConnectDB()
+	//
+	migration.Migrate()
+	//
 	lis, err := net.Listen("tcp", ":"+config.GetConfig().Server.Port)
 	if err != nil {
+		db.Close()
 		log.Fatal().Err(err).Msgf("failed to listen: %v", config.GetConfig().Server.Port)
 	}
 	//
 	grpcServer := grpc.NewServer()
-	pb.RegisterHelloServiceServer(grpcServer, &services.HelloServiceServerImpl{})
+	//
+	services.RegisterHealthService(grpcServer)
+	services.RegisterHelloService(grpcServer)
+	//
 	grpcServer.Serve(lis)
 	//
 }

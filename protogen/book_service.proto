@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package protogen;
+
+import "protogen/book.proto";
+
+option go_package = "./protogen";
+
+service BookService {
+    rpc CreateBook (BookCreateInput) returns (BookInfo);
+    rpc UpdateBook (BookUpdateInput) returns (BookInfo);
+    rpc DeleteBook (BookDeleteInput) returns (BookDeleteResponse);
+    rpc GetBook (BookGetInput) returns (BookInfo);
+    rpc QueryBooks (BookQueryInput) returns (BookInfoListResponse);
+}

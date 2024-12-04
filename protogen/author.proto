@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package protogen;
+
+option go_package = "./protogen";
+
+message Author {
+  string name = 1;
+}

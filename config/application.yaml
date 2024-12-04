@@ -9,7 +9,7 @@ server:
     key1: value1
 
 datasource:
-  url: postgres://postgres:pgdev01@localhost:15432/postgres?sslmode=disable&search_path=bookstore
+  url: postgres://postgres:pgdev01@localhost:15432/postgres?sslmode=disable&search_path=grpc-demo
   driver: "pgx"
   pool:
     max: 10

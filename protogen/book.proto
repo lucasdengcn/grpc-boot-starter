@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package protogen;
+
+import "google/protobuf/timestamp.proto";
+import "protogen/author.proto";
+
+option go_package = "./protogen";
+
+enum BookStatus {
+    BOOK_STATUS_CREATED = 0;
+    BOOK_STATUS_ACTIVE = 1;
+    BOOK_STATUS_OFFLINE = 2;
+}
+
+enum BookCategory {
+    BOOK_CATEGORY_UNKNOWN = 0;
+    BOOK_CATEGORY_JAVA = 1;
+    BOOK_CATEGORY_GO = 2;
+    BOOK_CATEGORY_MATH = 3;
+}
+
+message BookCreateInput {
+    string title = 1;
+    string description = 2;
+    uint32 amount = 3;
+    float price = 4;
+    BookCategory category = 5;
+    Author author = 6;
+}
+
+message BookUpdateInput {
+    uint32 id = 1;
+    string title = 2;
+    string description = 3;
+    uint32 amount = 4;
+    float price = 5;
+    BookCategory category = 6;
+    Author author = 7;
+}
+
+message BookStatusUpdateInput {
+    uint32 id = 1;
+    BookStatus status = 2;
+}
+
+message BookDeleteInput {
+    uint32 id = 1;
+}
+
+message BookDeleteResponse {
+    uint32 id = 1;
+}
+
+message BookGetInput {
+    uint32 id = 1;
+}
+
+message BookQueryInput {
+    BookCategory category = 1;
+    BookStatus status = 2;
+    //
+    uint32 page_size = 3;
+    uint32 page_index = 4;
+    uint32 cursor_id = 5;
+}
+
+message BookInfo {
+    uint32 id = 1;
+    string title = 2;
+    string description = 3;
+    Author author = 4;
+    uint32 amount = 5;
+    float price = 6;
+    BookCategory category = 7;
+    BookStatus status = 8;
+    google.protobuf.Timestamp create_time = 9;
+    google.protobuf.Timestamp update_time = 10;
+    google.protobuf.Timestamp delete_time = 11;
+    bool deleted = 12;
+}
+
+message BookInfoListResponse {
+    repeated BookInfo books = 1;
+    uint32 page_size = 2;
+    uint32 page_index = 3;
+    uint32 total_pages = 4;
+    bool has_next = 5;
+    bool has_previous = 6;
+}
