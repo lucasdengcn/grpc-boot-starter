@@ -44,6 +44,7 @@
 ## Reference
 
 [Error model](https://google.aip.dev/193#error_model)
+
 [Error proto](https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto)
 
 ## Health
