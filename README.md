@@ -4,7 +4,39 @@
 
 ## Plugin install
 
-## Generate Command
+## Command
+
+```shell
+# generate from proto files
+sh pb-gen.sh
+```
+
+```shell
+# add schema version
+sh schema.sh $msg
+```
+
+```shell
+# CDI wire generation
+sh wire-build.sh
+```
+
+```shell
+# start demo server A
+export GRPC_SERVER_PORT=50051
+sh server-start.sh
+```
+
+```shell
+# start demo server B
+export GRPC_SERVER_PORT=50052
+sh server-start.sh
+```
+
+```shell
+# start client call
+sh client-call.sh
+```
 
 ## Tech Stack
 
