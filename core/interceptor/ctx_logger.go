@@ -2,6 +2,7 @@ package interceptor
 
 import (
 	"context"
+	"grpc-boot-starter/core/correlation"
 	"grpc-boot-starter/core/models"
 	"strings"
 	"time"
@@ -23,7 +24,7 @@ func CtxLogger(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler gr
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, errMissingMetadata
+		return nil, models.NewValidationError(ctx, "MD_404", "missing metadata")
 	}
 	ctx, l := buildContextLogger(ctx, md, &z)
 	l.Info().Msgf("Income req: %T, %v", req, req)
@@ -31,7 +32,7 @@ func CtxLogger(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler gr
 	begin := time.Now()
 	resp, err := handler(ctx, req)
 	duration := time.Since(begin)
-	l.Info().Msgf("Income req: %T, %v, duration: %v", req, req, duration)
+	l.Info().Msgf("Income req, duration: %v", duration)
 	return resp, err
 }
 
@@ -49,7 +50,7 @@ func buildContextLogger(ctx context.Context, md metadata.MD, z *zerolog.Logger) 
 	traceID := ""
 	spanID := ""
 	correlationID := ""
-	corrCtx := &models.CorrelationCtx{}
+	corrCtx := &correlation.CorrelationCtx{}
 	if traceparent != "" {
 		parts := strings.Split(traceparent, "-")
 		if len(parts) == 4 {
@@ -68,17 +69,17 @@ func buildContextLogger(ctx context.Context, md metadata.MD, z *zerolog.Logger) 
 	l.UpdateContext(func(c zerolog.Context) zerolog.Context {
 		zc := c
 		if correlationID != "" {
-			zc = zc.Str(models.CorrelationIdFieldName, correlationID)
+			zc = zc.Str(correlation.CorrelationIdFieldName, correlationID)
 		}
 		if traceID != "" {
-			zc = zc.Str(models.TraceIdFieldName, traceID)
+			zc = zc.Str(correlation.TraceIdFieldName, traceID)
 		}
 		if spanID != "" {
-			zc = zc.Str(models.SpanIdFieldName, spanID)
+			zc = zc.Str(correlation.SpanIdFieldName, spanID)
 		}
 		return zc
 	})
 	//
-	ctx = context.WithValue(ctx, models.CorrelationCtxKey, corrCtx)
+	ctx = context.WithValue(ctx, correlation.CorrelationCtxKey, corrCtx)
 	return l.WithContext(ctx), &l
 }

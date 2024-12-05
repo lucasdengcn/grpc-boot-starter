@@ -18,6 +18,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/channelz/service"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -49,25 +50,32 @@ func main() {
 	fmt.Printf("running in %v, env: %v\n", workingPath, envName)
 	// load configuration
 	config.LoadConf(workingPath, envName)
-	//
+	// init global logger
 	logging.InitLogging()
-	//
+	// prepare db connection pool
 	db.ConnectDB()
-	//
+	// migrate db schemas
 	migration.Migrate()
-	//
+	// bind to tcp port
 	lis, err := net.Listen("tcp", ":"+config.GetConfig().Server.Port)
 	if err != nil {
 		db.Close()
 		log.Fatal().Err(err).Msgf("failed to listen: %v", config.GetConfig().Server.Port)
 	}
+	defer lis.Close()
 	log.Info().Msgf("Listen at port: %v", config.GetConfig().Server.Port)
 	//
 	grpcServer := setupGrpcServer()
+	// debugging, profiling
+	service.RegisterChannelzServiceToServer(grpcServer)
+	defer grpcServer.Stop()
+	//
 	registerServiceServers(grpcServer)
+	//
 	grpcServer.Serve(lis)
 }
 
+// setup grpc server instance with TLS certs, interceptors
 func setupGrpcServer() *grpc.Server {
 	// mTLS
 	basePath := config.GetConfig().Application.WorkingPath
@@ -82,6 +90,7 @@ func setupGrpcServer() *grpc.Server {
 		// https://godoc.org/google.golang.org/grpc#StreamInterceptor
 		grpc.ChainUnaryInterceptor(
 			interceptor.CtxLogger,
+			interceptor.HandleErrorGlobal,
 			interceptor.EnsureValidToken,
 		),
 		// Enable TLS for all incoming connections.
@@ -92,6 +101,7 @@ func setupGrpcServer() *grpc.Server {
 	return grpcServer
 }
 
+// register services to gRPC server
 func registerServiceServers(grpcServer *grpc.Server) {
 	// hook services
 	services.RegisterHealthService(grpcServer)

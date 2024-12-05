@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"grpc-boot-starter/protogen"
 	"log"
+	"math/rand"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -69,9 +70,10 @@ func main() {
 	//
 	for i := 0; i < 10; i++ {
 		go func() {
-			bookInfo := callBookCreateService(bookServiceClient)
-			callBookUpdateService(bookServiceClient, bookInfo)
-			callBookQueryService(bookServiceClient)
+			// bookInfo := callBookCreateService(bookServiceClient)
+			// callBookUpdateService(bookServiceClient, bookInfo)
+			// callBookQueryService(bookServiceClient)
+			callBookGetService(bookServiceClient, uint32(rand.Intn(1000)))
 		}()
 	}
 	//
@@ -128,6 +130,22 @@ func callBookCreateService(client protogen.BookServiceClient) *protogen.BookInfo
 		log.Fatal(err)
 	}
 	log.Printf("book create: %v\n", bookInfo)
+	return bookInfo
+}
+
+func callBookGetService(client protogen.BookServiceClient, id uint32) *protogen.BookInfo {
+	// Get a Book
+	bookGetInput := &protogen.BookGetInput{
+		Id: id,
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	//
+	bookInfo, err := client.GetBook(ctx, bookGetInput)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("book get: %v\n", bookInfo)
 	return bookInfo
 }
 

@@ -53,20 +53,20 @@ sh client-call.sh
 
 |Feature | Remark | Status |
 |--------|--------|--------|
-|Authentication| - |-|
+|Authentication| JWT OAuth2 |-|
 |Configuration | Yaml, Viper | OK |
 |Gorm|PostgreSQL|OK|
-|Interceptor|-|-|
+|Interceptor| Unray | OK |
 |Metrics|-|-|
 |Tracing|-|-|
 |Validation|-|-|
-|Error Handling|-|-|
+|Error Handling| Errno naming, Translation| OK |
 |Error Model| Google Richer Error model| OK |
 |Load balancing|client side| OK |
 |Health check|GRPC|OK|
 |Retry|-|-|
 |Service Config|-|-|
-|Profiling|-|-|
+|Profiling|channelz|-|
 |Logging|zerolog| OK |
 |Streaming|-|-|
 |Cache|-|-|
@@ -75,9 +75,10 @@ sh client-call.sh
 |Testing|testify|OK|
 |Flow Control|-|-|
 |API Versioning|-|-|
-|DB Migration|schema migration| OK |
+|DB Migration|go-migrate on schema| OK |
 |Repository|-|OK|
 |CDI| wire | OK |
+|AuthZ| casbin | -|
 
 ## Reference
 
@@ -88,3 +89,16 @@ sh client-call.sh
 ## Health
 
 health/v1
+
+## Debugging
+
+### Logs
+
+GRPC_GO_LOG_VERBOSITY_LEVEL=99
+GRPC_GO_LOG_SEVERITY_LEVEL=info
+
+### Channelz
+
+[Channelz](https://grpc.io/blog/a-short-introduction-to-channelz)
+
+[grpc-zpages](https://github.com/grpc/grpc-experiments/tree/master/gdebug)

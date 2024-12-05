@@ -3,17 +3,11 @@ package interceptor
 import (
 	"context"
 	"grpc-boot-starter/core/logging"
+	"grpc-boot-starter/core/models"
 	"strings"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
-)
-
-var (
-	errMissingMetadata = status.Errorf(codes.InvalidArgument, "missing metadata")
-	errInvalidToken    = status.Errorf(codes.Unauthenticated, "invalid token")
 )
 
 // ensureValidToken ensures a valid token exists within a request's metadata. If
@@ -24,12 +18,12 @@ func EnsureValidToken(ctx context.Context, req any, _ *grpc.UnaryServerInfo, han
 	logging.Info(ctx).Msgf("Income req: %T, %v", req, req)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, errMissingMetadata
+		return nil, models.NewValidationError(ctx, "MD_404", "missing metadata")
 	}
 	// The keys within metadata.MD are normalized to lowercase.
 	// See: https://godoc.org/google.golang.org/grpc/metadata#New
 	if !valid(md["authorization"]) {
-		return nil, errInvalidToken
+		return nil, models.NewAuthError(ctx, "AUTH_401", "invalid auth token")
 	}
 	// Continue execution of handler after ensuring a valid token.
 	return handler(ctx, req)
