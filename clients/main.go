@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"grpc-boot-starter/protogen"
 	"log"
-	"math/rand"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -14,6 +13,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/oauth"
+	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/resolver/manual"
 )
@@ -30,11 +31,28 @@ var serviceConfig = `{
 	"loadBalancingPolicy": "round_robin",
 	"healthCheckConfig": {
 		"serviceName": ""
-	}
+	},
+	"methodConfig": [{
+		"name": [{"service": "protogen.BookService"}],
+		"retryPolicy": {
+			"MaxAttempts": 4,
+			"InitialBackoff": ".01s",
+			"MaxBackoff": ".01s",
+			"BackoffMultiplier": 1.0,
+			"RetryableStatusCodes": [ "UNAVAILABLE" ]
+		}
+	}]
 }`
+
+var kacp = keepalive.ClientParameters{
+	Time:                10 * time.Second, // send pings every 10 seconds if there is no activity
+	Timeout:             time.Second,      // wait 1 second for ping ack before considering the connection dead
+	PermitWithoutStream: true,             // send pings even without active streams
+}
 
 // start a grpc client
 func main() {
+	fmt.Println(basepath)
 	// name resolver
 	r := manual.NewBuilderWithScheme("whatever")
 	r.InitialState(resolver.State{
@@ -53,6 +71,7 @@ func main() {
 		grpc.WithTransportCredentials(creds),
 		grpc.WithResolvers(r),
 		grpc.WithDefaultServiceConfig(serviceConfig),
+		grpc.WithKeepaliveParams(kacp),
 	}
 	// create a new gRPC client
 	address := fmt.Sprintf("%s:///unused", r.Scheme())
@@ -68,12 +87,12 @@ func main() {
 	//
 	bookServiceClient := protogen.NewBookServiceClient(conn)
 	//
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 2; i++ {
 		go func() {
 			// bookInfo := callBookCreateService(bookServiceClient)
 			// callBookUpdateService(bookServiceClient, bookInfo)
 			// callBookQueryService(bookServiceClient)
-			callBookGetService(bookServiceClient, uint32(rand.Intn(1000)))
+			callBookGetService(bookServiceClient, 73)
 		}()
 	}
 	//
@@ -138,14 +157,30 @@ func callBookGetService(client protogen.BookServiceClient, id uint32) *protogen.
 	bookGetInput := &protogen.BookGetInput{
 		Id: id,
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	// Create metadata and context.
+	md := metadata.Pairs("traceparent", "00-0123456789abcdef0123456789abcdef-0123456789abcdef-0")
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	// deadline
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	//
-	bookInfo, err := client.GetBook(ctx, bookGetInput)
+	var header, trailer metadata.MD
+	bookInfo, err := client.GetBook(ctx, bookGetInput, grpc.Header(&header), grpc.Trailer(&trailer))
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("book get: %v\n", bookInfo)
+	// Get header from server
+	fmt.Println("Received headers:")
+	for k, v := range header {
+		fmt.Printf("%s: %v\n", k, v)
+	}
+
+	fmt.Println("Received trailers:")
+	for k, v := range trailer {
+		fmt.Printf("%s: %v\n", k, v)
+	}
+	//
 	return bookInfo
 }
 

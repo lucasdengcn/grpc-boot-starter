@@ -80,6 +80,11 @@ func buildContextLogger(ctx context.Context, md metadata.MD, z *zerolog.Logger) 
 		return zc
 	})
 	//
+	if correlationID != "" {
+		header := metadata.Pairs("X-Correlation-Id", correlationID)
+		grpc.SetHeader(ctx, header)
+	}
+	//
 	ctx = context.WithValue(ctx, correlation.CorrelationCtxKey, corrCtx)
 	return l.WithContext(ctx), &l
 }
