@@ -2,6 +2,7 @@ package interceptor
 
 import (
 	"context"
+	"grpc-boot-starter/core/logging"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -20,6 +21,7 @@ var (
 // handler and returns an error. Otherwise, the interceptor invokes the unary
 // handler.
 func EnsureValidToken(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+	logging.Info(ctx).Msgf("Income req: %T, %v", req, req)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errMissingMetadata
