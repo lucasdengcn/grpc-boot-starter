@@ -45,7 +45,6 @@ func NewAppServer(otelOpts opentelemetry.Options) *AppServer {
 	}
 	// opts
 	opts := []grpc.ServerOption{
-		opentelemetry.ServerOption(otelOpts),
 		// The following grpc.ServerOption adds an interceptor for all unary
 		// RPCs. To configure an interceptor for streaming RPCs, see:
 		// https://godoc.org/google.golang.org/grpc#StreamInterceptor
@@ -59,6 +58,9 @@ func NewAppServer(otelOpts opentelemetry.Options) *AppServer {
 		// KeepAlive settings
 		grpc.KeepaliveEnforcementPolicy(kaep),
 		grpc.KeepaliveParams(kasp),
+	}
+	if config.GetConfig().OTEL.Metric {
+		opts = append(opts, opentelemetry.ServerOption(otelOpts))
 	}
 	//
 	grpcServer := grpc.NewServer(opts...)

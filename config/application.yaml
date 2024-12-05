@@ -27,9 +27,9 @@ otel:
   insecure: true
   exporter:
     endpoint: localhost:14317 #grpc
-    logging: true
-    tracer: true
-    metrics: true
+    logging: false
+    tracer: false
+    metrics: false
 
 security:
   jwt:

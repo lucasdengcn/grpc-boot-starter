@@ -63,8 +63,9 @@ sh client-call.sh
 |Error Handling| Errno naming, Translation| OK |
 |Error Model| Google Richer Error model| OK |
 |Load balancing|client side| - |
-|Health check|GRPC|OK|
+|Health check| client & server side import health check package |OK|
 |Retry|client side |-|
+|Wait-for-Ready|client side | - |
 |Deadline|timeout, client side, context.WithTimeout|-|
 |Service Config| client side |-|
 |Profiling|channelz|-|
@@ -73,6 +74,7 @@ sh client-call.sh
 |Cache|-|-|
 |Messaging|-|-|
 |Distributed|-|-|
+|Bidirection|-|-|
 |Testing|testify|OK|
 |Flow Control| Rate Limit, SHOULD be handled by Gateway |-|
 |API Versioning| PB having backward compatibility on model |-|

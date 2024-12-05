@@ -13,10 +13,12 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/oauth"
+	_ "google.golang.org/grpc/health"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/resolver/manual"
+	"google.golang.org/grpc/status"
 )
 
 // basepath is the root directory of this package.
@@ -27,6 +29,7 @@ func init() {
 	basepath = filepath.Dir(currentFile)
 }
 
+// import health package to enable healch check.
 var serviceConfig = `{
 	"loadBalancingPolicy": "round_robin",
 	"healthCheckConfig": {
@@ -165,8 +168,10 @@ func callBookGetService(client protogen.BookServiceClient, id uint32) *protogen.
 	defer cancel()
 	//
 	var header, trailer metadata.MD
-	bookInfo, err := client.GetBook(ctx, bookGetInput, grpc.Header(&header), grpc.Trailer(&trailer))
+	bookInfo, err := client.GetBook(ctx, bookGetInput, grpc.Header(&header), grpc.Trailer(&trailer), grpc.WaitForReady(true))
 	if err != nil {
+		got := status.Code(err)
+		log.Println(got)
 		log.Fatal(err)
 	}
 	log.Printf("book get: %v\n", bookInfo)
