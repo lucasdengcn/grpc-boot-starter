@@ -57,8 +57,8 @@ sh client-call.sh
 |Configuration | Yaml, Viper | OK |
 |Gorm|PostgreSQL|OK|
 |Interceptor| Unray | OK |
-|Metrics|-|-|
-|Tracing|-|-|
+|Metrics| OTEL | OK |
+|Tracing| OTEL | OK |
 |Validation|-|-|
 |Error Handling| Errno naming, Translation| OK |
 |Error Model| Google Richer Error model| OK |
