@@ -59,7 +59,7 @@ sh client-call.sh
 |Interceptor| Unray | OK |
 |Metrics| OTEL | OK |
 |Tracing| OTEL | OK |
-|Validation|-|-|
+|Validation| manually on demand |-|
 |Error Handling| Errno naming, Translation| OK |
 |Error Model| Google Richer Error model| OK |
 |Load balancing|client side| - |

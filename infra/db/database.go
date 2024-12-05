@@ -49,11 +49,14 @@ func ConnectDB() (*gorm.DB, error) {
 		}), &gorm.Config{
 			PrepareStmt:     true,
 			CreateBatchSize: 100,
+			Logger:          &logging.GormLogger{},
 		})
+		log.Info().Msgf("GormLogger: %T", db0.Logger)
 		//
 		if err != nil {
 			return
 		}
+		//
 		db = db0
 		log.Info().Msg("DB Connect Successfully.")
 	})
