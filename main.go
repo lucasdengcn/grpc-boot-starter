@@ -1,25 +1,21 @@
 package main
 
 import (
-	"crypto/tls"
+	"context"
 	"flag"
 	"fmt"
 	"grpc-boot-starter/core/config"
-	"grpc-boot-starter/core/interceptor"
 	"grpc-boot-starter/core/logging"
+	"grpc-boot-starter/core/otel"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/migration"
-	"grpc-boot-starter/protogen"
 	"grpc-boot-starter/server"
-	"grpc-boot-starter/services"
-	"net"
 	"os"
-	"path/filepath"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/rs/zerolog/log"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/channelz/service"
-	"google.golang.org/grpc/credentials"
 )
 
 // starting the server
@@ -43,7 +39,6 @@ func main() {
 	}
 	flag.Parse()
 	//
-	//
 	var envName = getEnvOrFlagValue(*env, "APP_ENV")
 	var workingPath = getEnvOrFlagValue(*cfg, "APP_BASE")
 	//
@@ -56,56 +51,52 @@ func main() {
 	db.ConnectDB()
 	// migrate db schemas
 	migration.Migrate()
-	// bind to tcp port
-	lis, err := net.Listen("tcp", ":"+config.GetConfig().Server.Port)
+	// init OTEL tracing
+	opts, err := otel.InitProviders(context.Background())
 	if err != nil {
-		db.Close()
-		log.Fatal().Err(err).Msgf("failed to listen: %v", config.GetConfig().Server.Port)
+		cleanUp()
+		os.Exit(1)
 	}
-	defer lis.Close()
-	log.Info().Msgf("Listen at port: %v", config.GetConfig().Server.Port)
 	//
-	grpcServer := setupGrpcServer()
-	// debugging, profiling
-	service.RegisterChannelzServiceToServer(grpcServer)
-	defer grpcServer.Stop()
+	appServer := server.NewAppServer(opts)
 	//
-	registerServiceServers(grpcServer)
-	//
-	grpcServer.Serve(lis)
+	go func() {
+		err := appServer.Start()
+		if err != nil {
+			cleanUp()
+			os.Exit(1)
+		}
+	}()
+	shutdownHook(appServer)
 }
 
-// setup grpc server instance with TLS certs, interceptors
-func setupGrpcServer() *grpc.Server {
-	// mTLS
-	basePath := config.GetConfig().Application.WorkingPath
-	cert, err := tls.LoadX509KeyPair(filepath.Join(basePath, "secrets/x509/server_cert.pem"), filepath.Join(basePath, "secrets/x509/server_key.pem"))
-	if err != nil {
-		log.Fatal().Err(err).Msgf("failed to load key pair: %s", err)
-	}
-	// opts
-	opts := []grpc.ServerOption{
-		// The following grpc.ServerOption adds an interceptor for all unary
-		// RPCs. To configure an interceptor for streaming RPCs, see:
-		// https://godoc.org/google.golang.org/grpc#StreamInterceptor
-		grpc.ChainUnaryInterceptor(
-			interceptor.CtxLogger,
-			interceptor.HandleErrorGlobal,
-			interceptor.EnsureValidToken,
-		),
-		// Enable TLS for all incoming connections.
-		grpc.Creds(credentials.NewServerTLSFromCert(&cert)),
-	}
+func shutdownHook(appServer *server.AppServer) {
+	// quit channel to receive stop
+	quit := make(chan os.Signal, 1)
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	// kill (no param) default send syscall.SIGTERM
+	// kill -2 is syscall.SIGINT, Ctrl+C
+	// kill -9 is syscall. SIGKILL but can"t be catch, so don't need add it
+	signal.Notify(quit, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 	//
-	grpcServer := grpc.NewServer(opts...)
-	return grpcServer
+	<-quit
+	//
+	log.Info().Msg("Shutdown Server within 5 seconds ...")
+	appServer.Stop()
+	//
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cleanUp()
+	// catching ctx.Done(). timeout of 5 seconds.
+	select {
+	case <-ctx.Done():
+		log.Info().Msg("timeout of 5 seconds.")
+	}
+	log.Info().Msg("Server exiting")
 }
 
-// register services to gRPC server
-func registerServiceServers(grpcServer *grpc.Server) {
-	// hook services
-	services.RegisterHealthService(grpcServer)
-	protogen.RegisterBookServiceServer(grpcServer, server.InitializeBookService())
-	protogen.RegisterHelloServiceServer(grpcServer, server.InitializeHelloService())
-	services.SetServerServing()
+func cleanUp() {
+	db.Close()
+	otel.Shutdown(context.Background())
 }

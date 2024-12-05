@@ -22,14 +22,14 @@ logging:
 
 otel:
   service:
-    name: gin-boot-starter
+    name: grpc-boot-starter
     version: 1.0.0
   insecure: true
   exporter:
     endpoint: localhost:14317 #grpc
-    logging: false
-    tracer: false
-    metrics: false
+    logging: true
+    tracer: true
+    metrics: true
 
 security:
   jwt:
