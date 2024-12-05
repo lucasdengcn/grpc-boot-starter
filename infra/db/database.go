@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"grpc-boot-starter/config"
+	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/logging"
 	"os"
 	"sync"

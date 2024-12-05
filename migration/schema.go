@@ -3,7 +3,7 @@ package migration
 import (
 	"errors"
 	"fmt"
-	"grpc-boot-starter/config"
+	"grpc-boot-starter/core/config"
 
 	"github.com/rs/zerolog/log"
 

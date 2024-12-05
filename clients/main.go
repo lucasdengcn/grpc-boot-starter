@@ -5,13 +5,25 @@ import (
 	"fmt"
 	"grpc-boot-starter/protogen"
 	"log"
+	"path/filepath"
+	"runtime"
 	"time"
 
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/resolver/manual"
 )
+
+// basepath is the root directory of this package.
+var basepath string
+
+func init() {
+	_, currentFile, _, _ := runtime.Caller(0)
+	basepath = filepath.Dir(currentFile)
+}
 
 var serviceConfig = `{
 	"loadBalancingPolicy": "round_robin",
@@ -30,15 +42,19 @@ func main() {
 			{Addr: "localhost:50052"},
 		},
 	})
-	//
-	address := fmt.Sprintf("%s:///unused", r.Scheme())
+	// prepare token
+	perRPC := oauth.TokenSource{TokenSource: oauth2.StaticTokenSource(fetchToken())}
+	// prepare tls certs
+	creds := loadClientTLSCert()
 	//
 	options := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(perRPC),
+		grpc.WithTransportCredentials(creds),
 		grpc.WithResolvers(r),
 		grpc.WithDefaultServiceConfig(serviceConfig),
 	}
 	// create a new gRPC client
+	address := fmt.Sprintf("%s:///unused", r.Scheme())
 	conn, err := grpc.NewClient(address, options...)
 	if err != nil {
 		log.Fatal(err)
@@ -61,6 +77,24 @@ func main() {
 	//
 	for {
 		time.Sleep(10 * time.Second)
+	}
+}
+
+func loadClientTLSCert() credentials.TransportCredentials {
+	path := filepath.Dir(basepath)
+	creds, err := credentials.NewClientTLSFromFile(filepath.Join(path, "secrets/x509/ca_cert.pem"), "x.test.example.com")
+	if err != nil {
+		log.Fatalf("failed to load credentials: %v", err)
+	}
+	return creds
+}
+
+// fetchToken simulates a token lookup and omits the details of proper token
+// acquisition. For examples of how to acquire an OAuth2 token, see:
+// https://godoc.org/golang.org/x/oauth2
+func fetchToken() *oauth2.Token {
+	return &oauth2.Token{
+		AccessToken: "some-secret-token",
 	}
 }
 

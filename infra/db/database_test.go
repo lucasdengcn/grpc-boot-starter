@@ -1,7 +1,7 @@
 package db
 
 import (
-	"grpc-boot-starter/config"
+	"grpc-boot-starter/core/config"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

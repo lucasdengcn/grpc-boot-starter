@@ -2,7 +2,7 @@ package logging
 
 import (
 	"context"
-	"grpc-boot-starter/config"
+	"grpc-boot-starter/core/config"
 	"io"
 	"os"
 	"time"
@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const loggerKey = "_zero_logger_"
+const loggerCtxKey = "_zero_logger_"
 
 func InitLogging() {
 	cfg := config.GetConfig().Logging
@@ -31,18 +31,13 @@ func InitLogging() {
 	log.Logger = zerolog.New(writer).With().Timestamp().Caller().Logger()
 }
 
-func With(ctx context.Context) *zerolog.Logger {
-	return log.Ctx(ctx)
-}
-
 // Get context logger
 func Get(ctx context.Context) *zerolog.Logger {
-	l := ctx.Value(loggerKey)
+	l := log.Ctx(ctx)
 	if l == nil {
 		return &log.Logger
 	}
-	ll := l.(zerolog.Logger)
-	return &ll
+	return l
 }
 
 // Trace starts a new message with trace level.

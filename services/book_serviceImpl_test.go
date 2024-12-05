@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"grpc-boot-starter/config"
+	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/migration"
 	"grpc-boot-starter/persistence/repository"

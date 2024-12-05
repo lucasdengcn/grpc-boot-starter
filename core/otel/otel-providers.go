@@ -3,7 +3,7 @@ package otel
 import (
 	"context"
 	"errors"
-	"grpc-boot-starter/config"
+	"grpc-boot-starter/core/config"
 	"log"
 
 	"google.golang.org/grpc"

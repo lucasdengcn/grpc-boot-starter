@@ -2,12 +2,11 @@ package repository
 
 import (
 	"context"
+	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/persistence/entity"
 	"sync"
 	"time"
-
-	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -40,7 +39,7 @@ func (b *BookRepository) Update(ctx context.Context, book *entity.Book) (bool, e
 	if result.Error != nil {
 		return false, result.Error
 	}
-	log.Debug().Msgf("Update book RowsAffected: %v", result.RowsAffected)
+	logging.Debug(ctx).Msgf("Update book RowsAffected: %v", result.RowsAffected)
 	return result.RowsAffected > 0, nil
 }
 
@@ -50,7 +49,7 @@ func (b *BookRepository) UpdateStatus(ctx context.Context, book *entity.Book) (b
 	if result.Error != nil {
 		return false, result.Error
 	}
-	log.Debug().Msgf("Update book status RowsAffected: %v", result.RowsAffected)
+	logging.Debug(ctx).Msgf("Update book status RowsAffected: %v", result.RowsAffected)
 	return result.RowsAffected > 0, nil
 }
 
@@ -59,7 +58,7 @@ func (b *BookRepository) Delete(ctx context.Context, id uint32) (bool, error) {
 	// update raw sql
 	result := db.GetTx(ctx).Exec("update books set deleted = ?, deleted_at = ? where id = ?", true, time.Now(), id)
 	//
-	log.Debug().Msgf("Delete book RowsAffected: %v", result.RowsAffected)
+	logging.Debug(ctx).Msgf("Delete book RowsAffected: %v", result.RowsAffected)
 	if result.Error != nil {
 		return false, result.Error
 	}

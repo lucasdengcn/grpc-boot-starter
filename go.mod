@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.18.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -71,6 +72,7 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/net v0.30.0 // indirect
+	golang.org/x/oauth2 v0.24.0
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241104194629-dd2ea8efbc28 // indirect

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
-	"grpc-boot-starter/config"
+	"grpc-boot-starter/core/config"
+	"grpc-boot-starter/core/interceptor"
 	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/migration"
@@ -12,9 +14,11 @@ import (
 	"grpc-boot-starter/services"
 	"net"
 	"os"
+	"path/filepath"
 
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 // starting the server
@@ -59,15 +63,39 @@ func main() {
 	}
 	log.Info().Msgf("Listen at port: %v", config.GetConfig().Server.Port)
 	//
-	grpcServer := grpc.NewServer()
+	grpcServer := setupGrpcServer()
+	registerServiceServers(grpcServer)
+	grpcServer.Serve(lis)
+}
+
+func setupGrpcServer() *grpc.Server {
+	// mTLS
+	basePath := config.GetConfig().Application.WorkingPath
+	cert, err := tls.LoadX509KeyPair(filepath.Join(basePath, "secrets/x509/server_cert.pem"), filepath.Join(basePath, "secrets/x509/server_key.pem"))
+	if err != nil {
+		log.Fatal().Err(err).Msgf("failed to load key pair: %s", err)
+	}
+	// opts
+	opts := []grpc.ServerOption{
+		// The following grpc.ServerOption adds an interceptor for all unary
+		// RPCs. To configure an interceptor for streaming RPCs, see:
+		// https://godoc.org/google.golang.org/grpc#StreamInterceptor
+		grpc.ChainUnaryInterceptor(
+			interceptor.CtxLogger,
+			interceptor.EnsureValidToken,
+		),
+		// Enable TLS for all incoming connections.
+		grpc.Creds(credentials.NewServerTLSFromCert(&cert)),
+	}
 	//
-	services.RegisterHealthService(grpcServer)
+	grpcServer := grpc.NewServer(opts...)
+	return grpcServer
+}
+
+func registerServiceServers(grpcServer *grpc.Server) {
 	// hook services
+	services.RegisterHealthService(grpcServer)
 	protogen.RegisterBookServiceServer(grpcServer, server.InitializeBookService())
 	protogen.RegisterHelloServiceServer(grpcServer, server.InitializeHelloService())
-	//
 	services.SetServerServing()
-	//
-	grpcServer.Serve(lis)
-	//
 }

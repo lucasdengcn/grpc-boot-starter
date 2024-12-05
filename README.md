@@ -42,6 +42,12 @@ sh client-call.sh
 
 - gRPC
 - Go
+- Gorm
+- Zerolog
+- Wire
+- Viper
+- Yaml
+- PostgreSQL
 
 ## Features
 
