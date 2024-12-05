@@ -53,7 +53,7 @@ sh client-call.sh
 
 |Feature | Remark | Status |
 |--------|--------|--------|
-|Authentication| JWT OAuth2 |-|
+|Authentication| JWT OAuth2 | OK |
 |Configuration | Yaml, Viper | OK |
 |Gorm|PostgreSQL|OK|
 |Interceptor| Unray | OK |
@@ -74,7 +74,7 @@ sh client-call.sh
 |Distributed|-|-|
 |Testing|testify|OK|
 |Flow Control|-|-|
-|API Versioning|-|-|
+|API Versioning| PB having backward compatibility on model |-|
 |DB Migration|go-migrate on schema| OK |
 |Repository|-|OK|
 |CDI| wire | OK |

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/core/models"
+	"grpc-boot-starter/core/security"
 	"grpc-boot-starter/persistence/entity"
 	"grpc-boot-starter/persistence/repository"
 	"grpc-boot-starter/protogen"
@@ -65,6 +66,10 @@ func (s *BookServiceServerImpl) mapToBookInfo(book *entity.Book) *protogen.BookI
 
 // GetBook to find book's detail
 func (s *BookServiceServerImpl) GetBook(ctx context.Context, in *protogen.BookGetInput) (*protogen.BookInfo, error) {
+	//
+	principle := security.CurrentUser(ctx)
+	logging.Debug(ctx).Msgf("current user: %v", principle.GetID())
+	//
 	book, err := s.bookRepository.FindBook(ctx, in.Id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

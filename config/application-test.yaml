@@ -38,7 +38,7 @@ security:
     algorithm: RS512
     issuer: gin-boot-starter
     keyId: 900150983cd24fb0d6963f7d28e17f72
-    expiration: 60 # minutes
+    expiration: 600 # minutes
     refresh_token_expiration: 72 # hours
     token_blacklist_enabled: true
     token_blacklist_ttl: 30 # minutes
