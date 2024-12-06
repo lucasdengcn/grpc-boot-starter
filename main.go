@@ -52,13 +52,9 @@ func main() {
 	// migrate db schemas
 	migration.Migrate()
 	// init OTEL tracing
-	opts, err := otel.InitProviders(context.Background())
-	if err != nil {
-		cleanUp()
-		os.Exit(1)
-	}
+	otel.InitProviders(context.Background())
 	//
-	appServer := server.NewAppServer(opts)
+	appServer := server.NewAppServer()
 	//
 	go func() {
 		err := appServer.Start()

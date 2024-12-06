@@ -6,6 +6,7 @@ import (
 	"grpc-boot-starter/apis/protogen"
 	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/interceptor"
+	"grpc-boot-starter/core/otel"
 	"net"
 	"path/filepath"
 	"time"
@@ -15,7 +16,6 @@ import (
 	channelz "google.golang.org/grpc/channelz/service"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/keepalive"
-	"google.golang.org/grpc/stats/opentelemetry"
 )
 
 var kaep = keepalive.EnforcementPolicy{
@@ -36,7 +36,7 @@ type AppServer struct {
 	lis  *net.Listener
 }
 
-func NewAppServer(otelOpts opentelemetry.Options) *AppServer {
+func NewAppServer() *AppServer {
 	// mTLS
 	basePath := config.GetConfig().Application.WorkingPath
 	cert, err := tls.LoadX509KeyPair(filepath.Join(basePath, "secrets/x509/server_cert.pem"), filepath.Join(basePath, "secrets/x509/server_key.pem"))
@@ -45,6 +45,7 @@ func NewAppServer(otelOpts opentelemetry.Options) *AppServer {
 	}
 	// opts
 	opts := []grpc.ServerOption{
+		otel.NewHandler(),
 		// The following grpc.ServerOption adds an interceptor for all unary
 		// RPCs. To configure an interceptor for streaming RPCs, see:
 		// https://godoc.org/google.golang.org/grpc#StreamInterceptor
@@ -58,9 +59,6 @@ func NewAppServer(otelOpts opentelemetry.Options) *AppServer {
 		// KeepAlive settings
 		grpc.KeepaliveEnforcementPolicy(kaep),
 		grpc.KeepaliveParams(kasp),
-	}
-	if config.GetConfig().OTEL.Metric {
-		opts = append(opts, opentelemetry.ServerOption(otelOpts))
 	}
 	//
 	grpcServer := grpc.NewServer(opts...)
