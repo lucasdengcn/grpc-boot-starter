@@ -1,0 +1,3 @@
+export GOPATH=/Users/yamingdeng/goprojects
+$GOPATH/bin/revive -config ./.revive.toml -formatter stylish ./...
+
