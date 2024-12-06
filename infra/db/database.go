@@ -15,11 +15,11 @@ import (
 	"gorm.io/gorm"
 )
 
-var onceDB sync.Once
-
-var db *gorm.DB
-
-const txKey string = "txScoped"
+var (
+	onceDB        sync.Once
+	db            *gorm.DB
+	dbScopedTxKey = "db.scopedTxKey"
+)
 
 // ConnectDB db connections
 func ConnectDB() (*gorm.DB, error) {
@@ -89,55 +89,57 @@ func Close() {
 }
 
 // BeginTx return context
-func BeginTx(c context.Context) context.Context {
+func BeginTx(ctx context.Context) context.Context {
 	if db == nil {
 		panic("DB not init yet.")
 	}
 	tx := db.Begin()
 	if tx.Error != nil {
-		logging.Panic(c).Msgf("Begin Tx Error: %v", tx.Error)
+		logging.Panic(ctx).Msgf("Begin Tx Error: %v", tx.Error)
 	}
-	return context.WithValue(c, txKey, tx)
+	return context.WithValue(ctx, dbScopedTxKey, tx)
 }
 
 // CommitTx return context
-func CommitTx(c context.Context) {
-	dbTx := GetTx(c)
+func CommitTx(ctx context.Context) {
+	dbTx := GetTx(ctx)
 	if dbTx == nil {
+		logging.Error(ctx).Msgf("tx Commit, but No Tx attached to the context. check the caller chain")
 		return
 	}
 	err := dbTx.Commit()
 	if err != nil {
-		logging.Error(c).Msgf("tx Commit Error. %v", dbTx)
+		logging.Error(ctx).Msgf("tx Commit Error. %v", dbTx)
 		panic(err)
 	}
-	logging.Debug(c).Msgf("tx Commit Success. %v", dbTx)
+	logging.Debug(ctx).Msgf("tx Commit Success. %v", dbTx)
 	dbTx = nil
 }
 
 // RollbackTx return error
-func RollbackTx(c context.Context) {
-	dbTx := GetTx(c)
+func RollbackTx(ctx context.Context) {
+	dbTx := GetTx(ctx)
 	if dbTx == nil {
+		logging.Error(ctx).Msgf("tx Rollback, but No Tx attached to the context. check the caller chain")
 		return
 	}
 	err := dbTx.Rollback()
 	if err != nil {
-		logging.Error(c).Msgf("tx Rollback Error. %v", dbTx)
+		logging.Error(ctx).Msgf("tx Rollback Error. %v", dbTx)
 	} else {
-		logging.Debug(c).Msgf("tx Rollback Success. %v", dbTx)
+		logging.Debug(ctx).Msgf("tx Rollback Success. %v", dbTx)
 	}
 }
 
 // GetTx return sqlx.Tx
-func GetTx(c context.Context) *gorm.DB {
-	val := c.Value(txKey)
+func GetTx(ctx context.Context) *gorm.DB {
+	val := ctx.Value(dbScopedTxKey)
 	if val == nil {
 		return db
 	}
 	dbTx, ok := val.(*gorm.DB)
 	if !ok {
-		logging.Panic(c).Msgf("Can't Convert Tx object from context. %v", dbTx)
+		logging.Panic(ctx).Msgf("Can't Convert Tx object from context. %v", dbTx)
 	}
 	return dbTx
 }

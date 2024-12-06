@@ -2,17 +2,17 @@ package server
 
 import (
 	"crypto/tls"
+	"grpc-boot-starter/apis/controller"
+	"grpc-boot-starter/apis/protogen"
 	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/interceptor"
-	"grpc-boot-starter/protogen"
-	"grpc-boot-starter/services"
 	"net"
 	"path/filepath"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/channelz/service"
+	channelz "google.golang.org/grpc/channelz/service"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/stats/opentelemetry"
@@ -71,13 +71,13 @@ func NewAppServer(otelOpts opentelemetry.Options) *AppServer {
 // register services to gRPC server
 func (s *AppServer) registerServiceServers() {
 	//
-	service.RegisterChannelzServiceToServer(s.serv)
+	channelz.RegisterChannelzServiceToServer(s.serv)
 	// hook services
-	services.RegisterHealthService(s.serv)
-	protogen.RegisterBookServiceServer(s.serv, InitializeBookService())
-	protogen.RegisterHelloServiceServer(s.serv, InitializeHelloService())
+	controller.RegisterHealthCheck(s.serv)
+	protogen.RegisterBookControllerServer(s.serv, InitializeBookController())
+	protogen.RegisterHelloControllerServer(s.serv, InitializeHelloController())
 	// update service status
-	services.SetServerServing()
+	controller.UpdateServerServing()
 	//
 	log.Info().Msg("Server services init done.")
 }

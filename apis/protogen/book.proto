@@ -3,7 +3,7 @@ syntax = "proto3";
 package protogen;
 
 import "google/protobuf/timestamp.proto";
-import "protogen/author.proto";
+import "apis/protogen/author.proto";
 
 option go_package = "./protogen";
 

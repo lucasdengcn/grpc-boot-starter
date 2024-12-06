@@ -1,4 +1,4 @@
-package services
+package controller
 
 import (
 	"google.golang.org/grpc"
@@ -12,22 +12,22 @@ var (
 	healthCheck  *health.Server
 )
 
-// RegisterService register health service to server
-func RegisterHealthService(server *grpc.Server) {
+// RegisterHealthCheck register health service to server
+func RegisterHealthCheck(server *grpc.Server) {
 	//
 	healthCheck = health.NewServer()
 	healthgrpc.RegisterHealthServer(server, healthCheck)
 	healthCheck.SetServingStatus(statusSystem, healthpb.HealthCheckResponse_NOT_SERVING)
 }
 
-func UpdateServiceStatus(name string, status int) {
+func UpdateStatus(name string, status int) {
 	healthCheck.SetServingStatus(name, healthpb.HealthCheckResponse_ServingStatus(status))
 }
 
-func SetServerServing() {
+func UpdateServerServing() {
 	healthCheck.SetServingStatus(statusSystem, healthpb.HealthCheckResponse_SERVING)
 }
 
-func SetServerDown() {
+func UpdateServerDown() {
 	healthCheck.SetServingStatus(statusSystem, healthpb.HealthCheckResponse_NOT_SERVING)
 }

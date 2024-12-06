@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"grpc-boot-starter/protogen"
+	"grpc-boot-starter/apis/protogen"
 	"log"
 	"path/filepath"
 	"runtime"
@@ -85,17 +85,17 @@ func main() {
 	defer conn.Close()
 
 	// create a new service client
-	helloServiceClient := protogen.NewHelloServiceClient(conn)
+	helloServiceClient := protogen.NewHelloControllerClient(conn)
 	callHelloService(helloServiceClient)
 	//
-	bookServiceClient := protogen.NewBookServiceClient(conn)
+	bookServiceClient := protogen.NewBookControllerClient(conn)
 	//
 	for i := 0; i < 2; i++ {
 		go func() {
-			// bookInfo := callBookCreateService(bookServiceClient)
+			bookInfo := callBookCreateService(bookServiceClient)
 			// callBookUpdateService(bookServiceClient, bookInfo)
 			// callBookQueryService(bookServiceClient)
-			callBookGetService(bookServiceClient, 73)
+			callBookGetService(bookServiceClient, bookInfo.Id)
 		}()
 	}
 	//
@@ -118,11 +118,11 @@ func loadClientTLSCert() credentials.TransportCredentials {
 // https://godoc.org/golang.org/x/oauth2
 func fetchToken() *oauth2.Token {
 	return &oauth2.Token{
-		AccessToken: "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6WyJVc2VyIl0sImdyb3VwcyI6WyJVc2VyIl0sImlzcyI6Imdpbi1ib290LXN0YXJ0ZXIiLCJzdWIiOiIxIiwiYXVkIjpbInRlc3QiXSwiZXhwIjoxNzMzNDA3NjIwLCJuYmYiOjE3MzMzNzE2MjAsImlhdCI6MTczMzM3MTYyMCwianRpIjoiOTAwMTUwOTgzY2QyNGZiMGQ2OTYzZjdkMjhlMTdmNzIifQ.DuyGnzvjyeZTB5ABkNIs3A5gyKz8RO-4sr1hDZKzbIDnkuZ1qTMvXQouh4Iwv5GQmLptOT5AdXhhwt1aczol2H1w2hez8hc12bjfYUw0Far7p7zfk9-rXdvntBasiqzXwuF4eCyrVLORPoYYFIDnegQv0R-D3_BZ56eWGaZZdkm7XRFjdpfFpsZOvsd5h2CZ7djq6n08AVCnP1JdTTZbPIwtHROEl8VfErETOtxagolLZiS2Ju53KXt9aEGrZcmzeYKJt70eDgXzJq7FiHuXzh5fK9EAxSsYipvo6olf2ssm3y1mpXaMMwKTIWsyfejcHyiodNXRWpO4MC-5zLAhmcHlrAZatWbSr2FrrpCk_KEHqi3fJ0lzjcrwOZulEcOeAanTAI_xnjWx6IPbG9zzSb8W6MAb_Gr1BM2NRYG8dl_C-3Xmuk0zxs45mtoo7mrqpBV_COvfhUdM03aho0qxVdtuA9EEtik53e-IYiYwapG5jEKEjJdu-XguV2k3rRMhhXDGN4LJsTgzmXWLwa21FYjC40gF9ASfrRvgZ_bZDgfJknSWJUg1_obPU5JTF1T1YvQFDiK78eU6nkXab8afH3WKoOQG5aAmECch1nVG1MOVpl7IdbaLQRTOp9zVxiO7daC_PG451Js2t8WMGv9nYlo0X0pBNDusgdbezX6XtM4",
+		AccessToken: "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6WyJVc2VyIl0sImdyb3VwcyI6WyJVc2VyIl0sImlzcyI6Imdpbi1ib290LXN0YXJ0ZXIiLCJzdWIiOiIxIiwiYXVkIjpbInRlc3QiXSwiZXhwIjoxNzMzNDgxNTQ2LCJuYmYiOjE3MzM0NDU1NDYsImlhdCI6MTczMzQ0NTU0NiwianRpIjoiOTAwMTUwOTgzY2QyNGZiMGQ2OTYzZjdkMjhlMTdmNzIifQ.OGx9ngKIOGVyTjTSin0AygaJjWwcArrVcL0uhaxlioQIoNcVfWTNq8Q6Z0J34GHPaaw92zjA90B6ru6rbdFbfAwl7IQsMsUqG2wO5cYDk4GU43QADX-O4zCF1m7qy5l8Sbar80qJDG3PsmGwtaS9q-2E4yMPga0VPOVyXsRLA792EH65yPAkA116cnLToRIpzcATm_MBTgw1lL1GKROMX2svBtaJ626KMO4XMoVRRzo2FbtMAVLv4kMlxWg4VTM8gdGjysWpT5Uj7R9iykk3zoevr834RmoBK8eHfJDsjqayjHdKBq-7sjX8k2l3EHsTro4AkEwCR5Lmf0vsMhaiOYZ4iG2M3UN_uLnvDzT0nDhXqLL22H_FZPijN-l0yMOq3Q2DHB6mEinU5zBdsPf25YrB4bbLcfW3R46OFSw_E5Cc1aGcyGWWmKpyRfEeg8VvZ5N58SXtpaqKhEYkUDz5rW4C60dH29NqFTDVRWuICiOVITBPhuPAem-uwx5jFGexi02Bzfx44CXhf6WJysRcHi5IkHegzSYec5mDUJLGno-HI2PpA1DJ3ojgTD76niqMKGkFFIWn6BJRDiMoOh-hQVcVIwvhvpDqy5aFs_f0ujjj2_c39a-IrIJGNsWqOcHp9GcU_I8kl-3d03BASfJVfDSkItOUii64w1gzeHB_Rnc",
 	}
 }
 
-func callHelloService(client protogen.HelloServiceClient) {
+func callHelloService(client protogen.HelloControllerClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	resp, err := client.SayHello(ctx, &protogen.HelloRequest{Name: "Lucas"})
@@ -132,10 +132,10 @@ func callHelloService(client protogen.HelloServiceClient) {
 	log.Println(resp)
 }
 
-func callBookCreateService(client protogen.BookServiceClient) *protogen.BookInfo {
+func callBookCreateService(client protogen.BookControllerClient) *protogen.BookInfo {
 	// Create a Book
 	bookCreateInput := &protogen.BookCreateInput{
-		Title:       "Book A",
+		Title:       "Book A Long title long title long title long title",
 		Description: "This is Book A",
 		Amount:      100,
 		Price:       10.0,
@@ -155,7 +155,7 @@ func callBookCreateService(client protogen.BookServiceClient) *protogen.BookInfo
 	return bookInfo
 }
 
-func callBookGetService(client protogen.BookServiceClient, id uint32) *protogen.BookInfo {
+func callBookGetService(client protogen.BookControllerClient, id uint32) *protogen.BookInfo {
 	// Get a Book
 	bookGetInput := &protogen.BookGetInput{
 		Id: id,
@@ -189,7 +189,7 @@ func callBookGetService(client protogen.BookServiceClient, id uint32) *protogen.
 	return bookInfo
 }
 
-func callBookUpdateService(client protogen.BookServiceClient, book *protogen.BookInfo) {
+func callBookUpdateService(client protogen.BookControllerClient, book *protogen.BookInfo) {
 	// Update a Book
 	input := &protogen.BookUpdateInput{
 		Id:          book.Id,
@@ -212,7 +212,7 @@ func callBookUpdateService(client protogen.BookServiceClient, book *protogen.Boo
 	log.Printf("book update: %v\n", resp)
 }
 
-func callBookQueryService(client protogen.BookServiceClient) {
+func callBookQueryService(client protogen.BookControllerClient) {
 	// Update a Book
 	input := &protogen.BookQueryInput{
 		Status:    protogen.BookStatus_BOOK_STATUS_ACTIVE.Enum(),

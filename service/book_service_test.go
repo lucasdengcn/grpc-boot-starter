@@ -1,20 +1,22 @@
-package services
+package service
 
 import (
 	"context"
+	"grpc-boot-starter/apis/protogen"
 	"grpc-boot-starter/core/config"
+	"grpc-boot-starter/core/security"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/migration"
 	"grpc-boot-starter/persistence/repository"
-	"grpc-boot-starter/protogen"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	bookRepository        *repository.BookRepository
-	bookServiceServerImpl *BookServiceServerImpl
+	bookRepository *repository.BookRepository
+	bookService    *BookService
+	ctx            context.Context
 )
 
 func Before() {
@@ -23,8 +25,10 @@ func Before() {
 	//
 	db.ConnectDB()
 	//
+	ctx = security.SaveCurrentUser(context.Background(), &security.Principle{ID: "1"})
+	//
 	bookRepository = repository.NewBookRepository()
-	bookServiceServerImpl = NewBookServiceServerImpl(bookRepository)
+	bookService = NewBookService(bookRepository)
 }
 
 func TestMain(t *testing.M) {
@@ -49,8 +53,7 @@ func TestCreateBook(t *testing.T) {
 		},
 	}
 	//
-	book, err := bookServiceServerImpl.CreateBook(context.Background(), in)
-	assert.NoError(t, err)
+	book := bookService.CreateBook(ctx, in)
 	assert.NotNil(t, book)
 	//
 	assert.True(t, book.Id > 0)
@@ -58,12 +61,15 @@ func TestCreateBook(t *testing.T) {
 }
 
 func TestGetBook(t *testing.T) {
+	defer func() {
+		r := recover()
+		assert.Nil(t, r)
+	}()
 	in := &protogen.BookGetInput{
 		Id: 4,
 	}
 	//
-	book, err := bookServiceServerImpl.GetBook(context.Background(), in)
-	assert.NoError(t, err)
+	book := bookService.GetBook(ctx, in)
 	assert.NotNil(t, book)
 	//
 	assert.True(t, book.Id > 0)
@@ -71,12 +77,15 @@ func TestGetBook(t *testing.T) {
 }
 
 func TestGetBookNonExist(t *testing.T) {
+	defer func() {
+		r := recover()
+		assert.NotNil(t, r)
+	}()
 	in := &protogen.BookGetInput{
 		Id: 400000000,
 	}
 	//
-	book, err := bookServiceServerImpl.GetBook(context.Background(), in)
-	assert.Nil(t, err)
+	book := bookService.GetBook(ctx, in)
 	assert.Nil(t, book)
 }
 
@@ -93,8 +102,7 @@ func TestUpdateBook(t *testing.T) {
 		},
 	}
 	//
-	book, err := bookServiceServerImpl.UpdateBook(context.Background(), in)
-	assert.NoError(t, err)
+	book := bookService.UpdateBook(ctx, in)
 	assert.NotNil(t, book)
 	//
 	assert.True(t, book.Id > 0)
@@ -102,6 +110,10 @@ func TestUpdateBook(t *testing.T) {
 }
 
 func TestUpdateBookNonExists(t *testing.T) {
+	defer func() {
+		r := recover()
+		assert.NotNil(t, r)
+	}()
 	in := &protogen.BookUpdateInput{
 		Id:          999999999,
 		Title:       "Book A",
@@ -114,7 +126,6 @@ func TestUpdateBookNonExists(t *testing.T) {
 		},
 	}
 	//
-	book, err := bookServiceServerImpl.UpdateBook(context.Background(), in)
-	assert.NoError(t, err)
+	book := bookService.UpdateBook(ctx, in)
 	assert.Nil(t, book)
 }

@@ -8,22 +8,30 @@ package server
 
 import (
 	"github.com/google/wire"
+	"grpc-boot-starter/apis/controller"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/persistence/repository"
-	"grpc-boot-starter/services"
+	"grpc-boot-starter/service"
 )
 
 // Injectors from wire_injector.go:
 
-func InitializeBookService() *services.BookServiceServerImpl {
+func InitializeBookService() *service.BookService {
 	bookRepository := repository.NewBookRepository()
-	bookServiceServerImpl := services.NewBookServiceServerImpl(bookRepository)
-	return bookServiceServerImpl
+	bookService := service.NewBookService(bookRepository)
+	return bookService
 }
 
-func InitializeHelloService() *services.HelloServiceServerImpl {
-	helloServiceServerImpl := services.NewHelloServiceServerImpl()
-	return helloServiceServerImpl
+func InitializeBookController() *controller.BookControllerImpl {
+	bookRepository := repository.NewBookRepository()
+	bookService := service.NewBookService(bookRepository)
+	bookControllerImpl := controller.NewBookControllerImpl(bookService)
+	return bookControllerImpl
+}
+
+func InitializeHelloController() *controller.HelloControllerImpl {
+	helloControllerImpl := controller.NewHelloControllerImpl()
+	return helloControllerImpl
 }
 
 // wire_injector.go:
@@ -32,7 +40,4 @@ func InitializeHelloService() *services.HelloServiceServerImpl {
 var dbSet = wire.NewSet(db.GetDBCon)
 
 // bookServiceSet
-var bookServiceSet = wire.NewSet(repository.NewBookRepository, services.NewBookServiceServerImpl)
-
-// helloServiceSet
-var helloServiceSet = wire.NewSet(services.NewHelloServiceServerImpl)
+var bookServiceSet = wire.NewSet(repository.NewBookRepository, service.NewBookService)

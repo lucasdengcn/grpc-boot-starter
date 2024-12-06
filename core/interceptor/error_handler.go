@@ -2,37 +2,36 @@ package interceptor
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"grpc-boot-starter/core/exception"
 	"grpc-boot-starter/core/logging"
-	"grpc-boot-starter/core/models"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func HandleErrorGlobal(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	// Continue execution of handler after ensuring a valid token.
-	resp, err := handler(ctx, req)
-	if err != nil {
-		logging.Error(ctx).Err(err).Msgf("Req Error: %T, %v, %v", err, req, errors.Is(err, &models.AuthError{}))
-		// translate error to gRPC error
-		switch {
-		case errors.Is(err, &models.RepositoryError{}):
-			return resp, status.Errorf(codes.Internal, err.Error())
-		case errors.Is(err, &models.AuthError{}):
-			return resp, status.Errorf(codes.Unauthenticated, err.Error())
-		case errors.Is(err, &models.ACLError{}):
-			return resp, status.Errorf(codes.PermissionDenied, err.Error())
-		case errors.Is(err, &models.EntityNotFoundError{}):
-			return resp, status.Errorf(codes.NotFound, err.Error())
-		case errors.Is(err, &models.ServiceError{}):
-			return resp, status.Errorf(codes.Internal, err.Error())
-		case errors.Is(err, &models.ValidationError{}):
-			return resp, status.Errorf(codes.InvalidArgument, err.Error())
-		default:
-			return resp, status.Errorf(codes.Unknown, err.Error())
+// HandleErrorGlobal recover error from panic, or handle error from normal return.
+// to ensure err having value, function body MUST assign value to err at last.
+func HandleErrorGlobal(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err0, ok := r.(error)
+			if ok {
+				logging.Error(ctx).Err(err0).Msgf("Recover Error: %T, %v", err0, req)
+				err = exception.TranslateToGrpcStatus(err0)
+			} else {
+				logging.Error(ctx).Msgf("Recover Unknown Error: %T, %v", r, r)
+				err = status.Errorf(codes.Unknown, fmt.Sprintf("%v", r))
+			}
 		}
+	}()
+	// Continue execution of handler after ensuring a valid token.
+	resp, err0 := handler(ctx, req)
+	// translate error to gRPC error
+	if err0 != nil {
+		logging.Error(ctx).Err(err0).Msgf("Req Error: %T, %v", err0, req)
+		err = exception.TranslateToGrpcStatus(err)
 	}
 	return resp, err
 }

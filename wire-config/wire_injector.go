@@ -1,9 +1,10 @@
 package server
 
 import (
+	"grpc-boot-starter/apis/controller"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/persistence/repository"
-	"grpc-boot-starter/services"
+	"grpc-boot-starter/service"
 
 	"github.com/google/wire"
 )
@@ -12,17 +13,21 @@ import (
 var dbSet = wire.NewSet(db.GetDBCon)
 
 // bookServiceSet
-var bookServiceSet = wire.NewSet(repository.NewBookRepository, services.NewBookServiceServerImpl)
+var bookServiceSet = wire.NewSet(repository.NewBookRepository, service.NewBookService)
 
-func InitializeBookService() *services.BookServiceServerImpl {
+func InitializeBookService() *service.BookService {
 	wire.Build(bookServiceSet)
-	return &services.BookServiceServerImpl{}
+	return &service.BookService{}
+}
+
+func InitializeBookController() *controller.BookControllerImpl {
+	wire.Build(bookServiceSet, controller.NewBookControllerImpl)
+	return &controller.BookControllerImpl{}
 }
 
 // helloServiceSet
-var helloServiceSet = wire.NewSet(services.NewHelloServiceServerImpl)
 
-func InitializeHelloService() *services.HelloServiceServerImpl {
-	wire.Build(helloServiceSet)
-	return &services.HelloServiceServerImpl{}
+func InitializeHelloController() *controller.HelloControllerImpl {
+	wire.Build(controller.NewHelloControllerImpl)
+	return &controller.HelloControllerImpl{}
 }

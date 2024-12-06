@@ -3,13 +3,10 @@ package security
 import (
 	"context"
 	"grpc-boot-starter/core/logging"
-
-	jwt "github.com/golang-jwt/jwt/v5"
 )
 
 // SaveCurrentUser to attache current user to request context
-func SaveCurrentUser(ctx context.Context, token *jwt.Token) context.Context {
-	principle := NewPrinciple(token)
+func SaveCurrentUser(ctx context.Context, principle *Principle) context.Context {
 	//c.Set(PrincipleContextKey, principle)
 	logging.Debug(ctx).Msgf("Current user is: %s", principle)
 	return context.WithValue(ctx, PrincipleContextKey, principle)

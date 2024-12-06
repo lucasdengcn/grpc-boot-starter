@@ -1,14 +1,14 @@
-package services
+package service
 
 import (
 	"context"
 	"errors"
+	"grpc-boot-starter/apis/protogen"
+	"grpc-boot-starter/core/exception"
 	"grpc-boot-starter/core/logging"
-	"grpc-boot-starter/core/models"
 	"grpc-boot-starter/core/security"
 	"grpc-boot-starter/persistence/entity"
 	"grpc-boot-starter/persistence/repository"
-	"grpc-boot-starter/protogen"
 	"sync"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	instanceBookService *BookServiceServerImpl
+	instanceBookService *BookService
 	onceBookService     sync.Once
 )
 
@@ -31,22 +31,21 @@ var (
 	errBookUpdate404 = "BOOK_UPDATE_404"
 )
 
-func NewBookServiceServerImpl(bookRepository *repository.BookRepository) *BookServiceServerImpl {
+func NewBookService(bookRepository *repository.BookRepository) *BookService {
 	onceBookService.Do(func() {
-		instanceBookService = &BookServiceServerImpl{
+		instanceBookService = &BookService{
 			bookRepository: bookRepository,
 		}
 	})
 	return instanceBookService
 }
 
-type BookServiceServerImpl struct {
-	protogen.UnimplementedBookServiceServer
+type BookService struct {
 	bookRepository *repository.BookRepository
 }
 
 // mapping book entity to book info response
-func (s *BookServiceServerImpl) mapToBookInfo(book *entity.Book) *protogen.BookInfo {
+func (s *BookService) mapToBookInfo(book *entity.Book) *protogen.BookInfo {
 	return &protogen.BookInfo{
 		Id:          uint32(book.ID),
 		Title:       book.Title,
@@ -65,7 +64,8 @@ func (s *BookServiceServerImpl) mapToBookInfo(book *entity.Book) *protogen.BookI
 }
 
 // GetBook to find book's detail
-func (s *BookServiceServerImpl) GetBook(ctx context.Context, in *protogen.BookGetInput) (*protogen.BookInfo, error) {
+// panic if repository error
+func (s *BookService) GetBook(ctx context.Context, in *protogen.BookGetInput) *protogen.BookInfo {
 	//
 	principle := security.CurrentUser(ctx)
 	logging.Debug(ctx).Msgf("current user: %v", principle.GetID())
@@ -73,16 +73,17 @@ func (s *BookServiceServerImpl) GetBook(ctx context.Context, in *protogen.BookGe
 	book, err := s.bookRepository.FindBook(ctx, in.Id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.NewEntityNotFoundError(ctx, in.Id, "Book Not Found")
+			panic(exception.NewEntityNotFoundError(ctx, in.Id, "Book Not Found"))
 		}
 		logging.Error(ctx).Err(err).Msgf("FindBook Error. id:%v", in.Id)
-		return nil, models.NewRepositoryError(ctx, errBookGet500, err.Error())
+		panic(exception.NewRepositoryError(ctx, errBookGet500, err.Error()))
 	}
-	return s.mapToBookInfo(book), nil
+	return s.mapToBookInfo(book)
 }
 
 // CreateBook to create book via input
-func (s *BookServiceServerImpl) CreateBook(ctx context.Context, in *protogen.BookCreateInput) (*protogen.BookInfo, error) {
+// panic if repository error
+func (s *BookService) CreateBook(ctx context.Context, in *protogen.BookCreateInput) *protogen.BookInfo {
 	logging.Info(ctx).Msgf("CreateBook criteria: %v", in)
 	book := &entity.Book{
 		Title:       in.Title,
@@ -93,16 +94,19 @@ func (s *BookServiceServerImpl) CreateBook(ctx context.Context, in *protogen.Boo
 		Amount:      in.Amount,
 		Status:      int32(protogen.BookStatus_BOOK_STATUS_CREATED),
 	}
+	//
 	book, err := s.bookRepository.Create(ctx, book)
 	if err != nil {
 		logging.Error(ctx).Err(err).Msgf("CreateBook Error. %v", in)
-		return nil, models.NewRepositoryError(ctx, errBookCreate500, err.Error())
+		panic(exception.NewRepositoryError(ctx, errBookCreate500, err.Error()))
+		// return nil, exception.NewRepositoryError(ctx, errBookCreate500, err.Error())
 	}
-	return s.mapToBookInfo(book), nil
+	return s.mapToBookInfo(book)
 }
 
 // UpdateBook to update book via id
-func (s *BookServiceServerImpl) UpdateBook(ctx context.Context, in *protogen.BookUpdateInput) (*protogen.BookInfo, error) {
+// panic if repository error
+func (s *BookService) UpdateBook(ctx context.Context, in *protogen.BookUpdateInput) *protogen.BookInfo {
 	logging.Info(ctx).Msgf("UpdateBook criteria: %v", in)
 	book := &entity.Book{
 		Model: gorm.Model{
@@ -119,31 +123,33 @@ func (s *BookServiceServerImpl) UpdateBook(ctx context.Context, in *protogen.Boo
 	ok, err := s.bookRepository.Update(ctx, book)
 	if err != nil {
 		logging.Error(ctx).Err(err).Msgf("UpdateBook Error. %v", in)
-		return nil, models.NewRepositoryError(ctx, errBookUpdate500, err.Error())
+		panic(exception.NewRepositoryError(ctx, errBookUpdate500, err.Error()))
 	}
 	if !ok {
 		logging.Error(ctx).Msgf("UpdateBook Failed. %v", in)
-		return nil, models.NewEntityNotFoundError(ctx, errBookUpdate404, "Update book but Got no updates")
+		panic(exception.NewEntityNotFoundError(ctx, errBookUpdate404, "Update book but Got no updates"))
 	}
-	return s.mapToBookInfo(book), nil
+	return s.mapToBookInfo(book)
 }
 
 // DeleteBook to delete book via id
-func (s *BookServiceServerImpl) DeleteBook(ctx context.Context, in *protogen.BookDeleteInput) (*protogen.BookDeleteResponse, error) {
+// panic if repository error
+func (s *BookService) DeleteBook(ctx context.Context, in *protogen.BookDeleteInput) *protogen.BookDeleteResponse {
 	logging.Info(ctx).Msgf("DeleteBook criteria: %v", in)
 	ok, err := s.bookRepository.Delete(ctx, in.Id)
 	if err != nil {
 		logging.Error(ctx).Err(err).Msgf("DeleteBook Error. id:%v", in.Id)
-		return nil, models.NewRepositoryError(ctx, errBookDelete500, err.Error())
+		panic(exception.NewRepositoryError(ctx, errBookDelete500, err.Error()))
 	}
 	return &protogen.BookDeleteResponse{
 		Id:      in.Id,
 		Success: ok,
-	}, nil
+	}
 }
 
 // QueryBooks to find books via input criteria
-func (s *BookServiceServerImpl) QueryBooks(ctx context.Context, in *protogen.BookQueryInput) (*protogen.BookInfoListResponse, error) {
+// panic if repository error
+func (s *BookService) QueryBooks(ctx context.Context, in *protogen.BookQueryInput) *protogen.BookInfoListResponse {
 	// prepare query criteria
 	logging.Info(ctx).Msgf("QueryBooks criteria: %v", in)
 	var status int32
@@ -166,7 +172,7 @@ func (s *BookServiceServerImpl) QueryBooks(ctx context.Context, in *protogen.Boo
 	bookList, err = s.bookRepository.FindBooks(ctx, status, category, 0)
 	if err != nil {
 		logging.Error(ctx).Err(err).Msgf("QueryBooks Error. %v", in)
-		return nil, models.NewRepositoryError(ctx, errBookQuery500, err.Error())
+		panic(exception.NewRepositoryError(ctx, errBookQuery500, err.Error()))
 	}
 	// processing pagination
 	totalPages := count / in.PageSize
@@ -182,7 +188,7 @@ func (s *BookServiceServerImpl) QueryBooks(ctx context.Context, in *protogen.Boo
 			PageIndex:   in.PageIndex,
 			HasNext:     false,
 			HasPrevious: totalPages > 0,
-		}, nil
+		}
 	}
 	// prepare and return
 	var output = &protogen.BookInfoListResponse{
@@ -196,5 +202,5 @@ func (s *BookServiceServerImpl) QueryBooks(ctx context.Context, in *protogen.Boo
 	for _, book := range bookList {
 		output.Books = append(output.Books, s.mapToBookInfo(book))
 	}
-	return output, nil
+	return output
 }

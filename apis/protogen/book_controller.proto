@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package protogen;
 
-import "protogen/book.proto";
+import "apis/protogen/book.proto";
 
 option go_package = "./protogen";
 
-service BookService {
+service BookController {
     rpc CreateBook (BookCreateInput) returns (BookInfo);
     rpc UpdateBook (BookUpdateInput) returns (BookInfo);
     rpc DeleteBook (BookDeleteInput) returns (BookDeleteResponse);

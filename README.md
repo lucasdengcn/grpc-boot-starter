@@ -79,7 +79,7 @@ sh client-call.sh
 |Flow Control| Rate Limit, SHOULD be handled by Gateway |-|
 |API Versioning| PB having backward compatibility on model |-|
 |DB Migration|go-migrate on schema| OK |
-|Repository|-|OK|
+|Repository| as design with entity |OK|
 |CDI| wire | OK |
 |AuthZ| casbin | -|
 

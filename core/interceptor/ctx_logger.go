@@ -3,7 +3,7 @@ package interceptor
 import (
 	"context"
 	"grpc-boot-starter/core/correlation"
-	"grpc-boot-starter/core/models"
+	"grpc-boot-starter/core/exception"
 	"strings"
 	"time"
 
@@ -24,7 +24,7 @@ func CtxLogger(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler gr
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, models.NewValidationError(ctx, "MD_404", "missing metadata")
+		return nil, exception.NewValidationError(ctx, "MD_404", "missing metadata")
 	}
 	ctx, l := buildContextLogger(ctx, md, &z)
 	l.Info().Msgf("Income req: %T, %v", req, req)
@@ -32,7 +32,7 @@ func CtxLogger(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler gr
 	begin := time.Now()
 	resp, err := handler(ctx, req)
 	duration := time.Since(begin)
-	l.Info().Msgf("Income req, duration: %v", duration)
+	l.Info().Msgf("Req response, duration: %v", duration)
 	return resp, err
 }
 

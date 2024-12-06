@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.35.2
 // 	protoc        v5.28.3
-// source: protogen/book_service.proto
+// source: apis/protogen/book_controller.proto
 
 package protogen
 
@@ -19,14 +19,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-var File_protogen_book_service_proto protoreflect.FileDescriptor
+var File_apis_protogen_book_controller_proto protoreflect.FileDescriptor
 
-var file_protogen_book_service_proto_rawDesc = []byte{
-	0x0a, 0x1b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x67, 0x65, 0x6e, 0x2f, 0x62, 0x6f, 0x6f, 0x6b, 0x5f,
-	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x08, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x67, 0x65, 0x6e, 0x1a, 0x13, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x67, 0x65,
-	0x6e, 0x2f, 0x62, 0x6f, 0x6f, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xcd, 0x02, 0x0a,
-	0x0b, 0x42, 0x6f, 0x6f, 0x6b, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3b, 0x0a, 0x0a,
+var file_apis_protogen_book_controller_proto_rawDesc = []byte{
+	0x0a, 0x23, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x67, 0x65, 0x6e, 0x2f,
+	0x62, 0x6f, 0x6f, 0x6b, 0x5f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x08, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x67, 0x65, 0x6e, 0x1a,
+	0x18, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x67, 0x65, 0x6e, 0x2f, 0x62,
+	0x6f, 0x6f, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xd0, 0x02, 0x0a, 0x0e, 0x42, 0x6f,
+	0x6f, 0x6b, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x3b, 0x0a, 0x0a,
 	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x6f, 0x6f, 0x6b, 0x12, 0x19, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x67, 0x65, 0x6e, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
 	0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x12, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x67, 0x65, 0x6e,
@@ -51,7 +52,7 @@ var file_protogen_book_service_proto_rawDesc = []byte{
 	0x6f, 0x33,
 }
 
-var file_protogen_book_service_proto_goTypes = []any{
+var file_apis_protogen_book_controller_proto_goTypes = []any{
 	(*BookCreateInput)(nil),      // 0: protogen.BookCreateInput
 	(*BookUpdateInput)(nil),      // 1: protogen.BookUpdateInput
 	(*BookDeleteInput)(nil),      // 2: protogen.BookDeleteInput
@@ -61,17 +62,17 @@ var file_protogen_book_service_proto_goTypes = []any{
 	(*BookDeleteResponse)(nil),   // 6: protogen.BookDeleteResponse
 	(*BookInfoListResponse)(nil), // 7: protogen.BookInfoListResponse
 }
-var file_protogen_book_service_proto_depIdxs = []int32{
-	0, // 0: protogen.BookService.CreateBook:input_type -> protogen.BookCreateInput
-	1, // 1: protogen.BookService.UpdateBook:input_type -> protogen.BookUpdateInput
-	2, // 2: protogen.BookService.DeleteBook:input_type -> protogen.BookDeleteInput
-	3, // 3: protogen.BookService.GetBook:input_type -> protogen.BookGetInput
-	4, // 4: protogen.BookService.QueryBooks:input_type -> protogen.BookQueryInput
-	5, // 5: protogen.BookService.CreateBook:output_type -> protogen.BookInfo
-	5, // 6: protogen.BookService.UpdateBook:output_type -> protogen.BookInfo
-	6, // 7: protogen.BookService.DeleteBook:output_type -> protogen.BookDeleteResponse
-	5, // 8: protogen.BookService.GetBook:output_type -> protogen.BookInfo
-	7, // 9: protogen.BookService.QueryBooks:output_type -> protogen.BookInfoListResponse
+var file_apis_protogen_book_controller_proto_depIdxs = []int32{
+	0, // 0: protogen.BookController.CreateBook:input_type -> protogen.BookCreateInput
+	1, // 1: protogen.BookController.UpdateBook:input_type -> protogen.BookUpdateInput
+	2, // 2: protogen.BookController.DeleteBook:input_type -> protogen.BookDeleteInput
+	3, // 3: protogen.BookController.GetBook:input_type -> protogen.BookGetInput
+	4, // 4: protogen.BookController.QueryBooks:input_type -> protogen.BookQueryInput
+	5, // 5: protogen.BookController.CreateBook:output_type -> protogen.BookInfo
+	5, // 6: protogen.BookController.UpdateBook:output_type -> protogen.BookInfo
+	6, // 7: protogen.BookController.DeleteBook:output_type -> protogen.BookDeleteResponse
+	5, // 8: protogen.BookController.GetBook:output_type -> protogen.BookInfo
+	7, // 9: protogen.BookController.QueryBooks:output_type -> protogen.BookInfoListResponse
 	5, // [5:10] is the sub-list for method output_type
 	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -79,27 +80,27 @@ var file_protogen_book_service_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_protogen_book_service_proto_init() }
-func file_protogen_book_service_proto_init() {
-	if File_protogen_book_service_proto != nil {
+func init() { file_apis_protogen_book_controller_proto_init() }
+func file_apis_protogen_book_controller_proto_init() {
+	if File_apis_protogen_book_controller_proto != nil {
 		return
 	}
-	file_protogen_book_proto_init()
+	file_apis_protogen_book_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_protogen_book_service_proto_rawDesc,
+			RawDescriptor: file_apis_protogen_book_controller_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_protogen_book_service_proto_goTypes,
-		DependencyIndexes: file_protogen_book_service_proto_depIdxs,
+		GoTypes:           file_apis_protogen_book_controller_proto_goTypes,
+		DependencyIndexes: file_apis_protogen_book_controller_proto_depIdxs,
 	}.Build()
-	File_protogen_book_service_proto = out.File
-	file_protogen_book_service_proto_rawDesc = nil
-	file_protogen_book_service_proto_goTypes = nil
-	file_protogen_book_service_proto_depIdxs = nil
+	File_apis_protogen_book_controller_proto = out.File
+	file_apis_protogen_book_controller_proto_rawDesc = nil
+	file_apis_protogen_book_controller_proto_goTypes = nil
+	file_apis_protogen_book_controller_proto_depIdxs = nil
 }

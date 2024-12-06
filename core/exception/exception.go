@@ -1,4 +1,4 @@
-package models
+package exception
 
 // to avoid conflict go errors package
 
@@ -55,7 +55,7 @@ func NewEntityNotFoundError(ctx context.Context, id any, message string) *Entity
 
 // Error returns the error message for the EntityNotFoundError type
 func (e *EntityNotFoundError) Error() string {
-	return fmt.Sprintf("Id: %d, correlationId: %s, %s", e.ID, e.CorrelationId, e.Message)
+	return fmt.Sprintf("correlationId: %s, id: %v, %s", e.CorrelationId, e.ID, e.Message)
 }
 
 func (s *EntityNotFoundError) Is(err error) bool {
