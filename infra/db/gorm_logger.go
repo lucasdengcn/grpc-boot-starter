@@ -1,8 +1,9 @@
-package logging
+package db
 
 import (
 	"context"
 	"fmt"
+	"grpc-boot-starter/core/logging"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -18,47 +19,30 @@ func (l *GormLogger) LogMode(logger.LogLevel) logger.Interface {
 }
 
 func (l *GormLogger) Error(ctx context.Context, msg string, opts ...interface{}) {
-	Error(ctx).Msg(fmt.Sprintf(msg, opts...))
+	fmt.Println("Error GormLogger")
+	logging.Error(ctx).Msg(fmt.Sprintf(msg, opts...))
 }
 
 func (l *GormLogger) Warn(ctx context.Context, msg string, opts ...interface{}) {
-	Warn(ctx).Msg(fmt.Sprintf(msg, opts...))
+	fmt.Println("Warn GormLogger")
+	logging.Warn(ctx).Msg(fmt.Sprintf(msg, opts...))
 }
 
 func (l *GormLogger) Info(ctx context.Context, msg string, opts ...interface{}) {
-	Info(ctx).Msg(fmt.Sprintf(msg, opts...))
+	fmt.Println("Info GormLogger")
+	logging.Info(ctx).Msg(fmt.Sprintf(msg, opts...))
 }
 
 func (l *GormLogger) Trace(ctx context.Context, begin time.Time, f func() (string, int64), err error) {
 	var event *zerolog.Event
 
 	if err != nil {
-		event = Debug(ctx)
+		event = logging.Error(ctx)
 	} else {
-		event = Trace(ctx)
+		event = logging.Info(ctx)
 	}
 
-	var dur_key string
-
-	switch zerolog.DurationFieldUnit {
-	case time.Nanosecond:
-		dur_key = "elapsed_ns"
-	case time.Microsecond:
-		dur_key = "elapsed_us"
-	case time.Millisecond:
-		dur_key = "elapsed_ms"
-	case time.Second:
-		dur_key = "elapsed"
-	case time.Minute:
-		dur_key = "elapsed_min"
-	case time.Hour:
-		dur_key = "elapsed_hr"
-	default:
-		Error(ctx).Interface("zerolog.DurationFieldUnit", zerolog.DurationFieldUnit).Msg("unknown value for DurationFieldUnit")
-		dur_key = "elapsed_"
-	}
-
-	event.Dur(dur_key, time.Since(begin))
+	event.Str("duration", fmt.Sprintf("%v", time.Since(begin)))
 
 	sql, rows := f()
 	if sql != "" {

@@ -2,6 +2,7 @@ package interceptor
 
 import (
 	"context"
+	"fmt"
 	"grpc-boot-starter/core/correlation"
 	"grpc-boot-starter/core/exception"
 	"strings"
@@ -32,7 +33,7 @@ func CtxLogger(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler gr
 	begin := time.Now()
 	resp, err := handler(ctx, req)
 	duration := time.Since(begin)
-	l.Info().Msgf("Req response, duration: %v", duration)
+	l.Info().Str("duration", fmt.Sprintf("%v", duration)).Msgf("Req response")
 	return resp, err
 }
 

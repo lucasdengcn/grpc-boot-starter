@@ -49,7 +49,7 @@ func ConnectDB() (*gorm.DB, error) {
 		}), &gorm.Config{
 			PrepareStmt:     true,
 			CreateBatchSize: 100,
-			Logger:          &logging.GormLogger{},
+			Logger:          &GormLogger{},
 		})
 		log.Info().Msgf("GormLogger: %T", db0.Logger)
 		//
@@ -93,7 +93,8 @@ func BeginTx(ctx context.Context) context.Context {
 	if db == nil {
 		panic("DB not init yet.")
 	}
-	tx := db.Begin()
+	// attach db to current context, so that caller chain E2E
+	tx := db.WithContext(ctx).Begin()
 	if tx.Error != nil {
 		logging.Panic(ctx).Msgf("Begin Tx Error: %v", tx.Error)
 	}
@@ -135,7 +136,8 @@ func RollbackTx(ctx context.Context) {
 func GetTx(ctx context.Context) *gorm.DB {
 	val := ctx.Value(dbScopedTxKey)
 	if val == nil {
-		return db
+		// attach db to current context, so that caller chain E2E
+		return db.WithContext(ctx)
 	}
 	dbTx, ok := val.(*gorm.DB)
 	if !ok {
