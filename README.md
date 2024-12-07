@@ -116,6 +116,8 @@ GRPC_GO_LOG_SEVERITY_LEVEL=info
 
 Golangci-lint aggregates dozens of tools with hundreds of checks. Revive is one of such tools
 
+[gofumpt](https://github.com/mvdan/gofumpt)
+
 ## Git hooks
 
 ```shell
