@@ -108,4 +108,11 @@ GRPC_GO_LOG_SEVERITY_LEVEL=info
 
 ## Tools
 
-- revive
+- [revive](https://revive.run/docs)
+- [pre-commit](https://pre-commit.com/hooks.html)
+
+## Git hooks
+
+```shell
+git config core.hooksPath .git-hooks 
+```
