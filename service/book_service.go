@@ -154,7 +154,6 @@ func (s *BookService) QueryBooks(ctx context.Context, in *protogen.BookQueryInpu
 	logging.Info(ctx).Msgf("QueryBooks criteria: %v", in)
 	var status int32
 	var category int32
-	var err error
 	if in.Status != nil {
 		status = int32(*in.Status)
 	} else {

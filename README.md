@@ -108,8 +108,13 @@ GRPC_GO_LOG_SEVERITY_LEVEL=info
 
 ## Tools
 
-- [revive](https://revive.run/docs)
-- [pre-commit](https://pre-commit.com/hooks.html)
+[revive](https://revive.run/docs)
+
+[pre-commit](https://pre-commit.com/hooks.html)
+
+[golangci-lint](https://golangci-lint.run/)
+
+Golangci-lint aggregates dozens of tools with hundreds of checks. Revive is one of such tools
 
 ## Git hooks
 
