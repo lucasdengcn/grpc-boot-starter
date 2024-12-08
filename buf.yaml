@@ -3,6 +3,7 @@ breaking:
   use:
     - FILE
 lint:
+  service_suffix: Controller
   use:
     - STANDARD
 modules:

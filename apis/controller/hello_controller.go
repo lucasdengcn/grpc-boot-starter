@@ -12,7 +12,7 @@ func NewHelloControllerImpl() *HelloControllerImpl {
 
 // implementing HelloService
 type HelloControllerImpl struct {
-	pb.UnimplementedHelloControllerServiceServer
+	pb.UnimplementedHelloControllerServer
 }
 
 func (s *HelloControllerImpl) SayHello(ctx context.Context, in *pb.SayHelloRequest) (*pb.SayHelloResponse, error) {

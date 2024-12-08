@@ -18,7 +18,7 @@ func NewBookControllerImpl(bookService *service.BookService) *BookControllerImpl
 }
 
 type BookControllerImpl struct {
-	pbbook.UnimplementedBookControllerServiceServer
+	pbbook.UnimplementedBookControllerServer
 	bookService *service.BookService
 }
 

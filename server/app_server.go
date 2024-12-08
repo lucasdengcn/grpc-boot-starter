@@ -73,8 +73,8 @@ func (s *AppServer) registerServiceServers() {
 	channelz.RegisterChannelzServiceToServer(s.serv)
 	// hook services
 	controller.RegisterHealthCheck(s.serv)
-	pbbook.RegisterBookControllerServiceServer(s.serv, InitializeBookController())
-	pbhello.RegisterHelloControllerServiceServer(s.serv, InitializeHelloController())
+	pbbook.RegisterBookControllerServer(s.serv, InitializeBookController())
+	pbhello.RegisterHelloControllerServer(s.serv, InitializeHelloController())
 	// update service status
 	controller.UpdateServerServing()
 	//

@@ -86,10 +86,10 @@ func main() {
 	defer conn.Close()
 
 	// create a new service client
-	helloServiceClient := pbhello.NewHelloControllerServiceClient(conn)
+	helloServiceClient := pbhello.NewHelloControllerClient(conn)
 	callHelloService(helloServiceClient)
 	//
-	bookServiceClient := pbbook.NewBookControllerServiceClient(conn)
+	bookServiceClient := pbbook.NewBookControllerClient(conn)
 	//
 	for i := 0; i < 2; i++ {
 		go func() {
@@ -123,7 +123,7 @@ func fetchToken() *oauth2.Token {
 	}
 }
 
-func callHelloService(client pbhello.HelloControllerServiceClient) {
+func callHelloService(client pbhello.HelloControllerClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	resp, err := client.SayHello(ctx, &pbhello.SayHelloRequest{Name: "Lucas"})
@@ -133,7 +133,7 @@ func callHelloService(client pbhello.HelloControllerServiceClient) {
 	log.Println(resp)
 }
 
-func callBookCreateService(client pbbook.BookControllerServiceClient) *pbbook.CreateBookResponse {
+func callBookCreateService(client pbbook.BookControllerClient) *pbbook.CreateBookResponse {
 	// Create a Book
 	bookCreateInput := &pbbook.CreateBookRequest{
 		Title:       "Book A Long title long title long title long title",
@@ -158,7 +158,7 @@ func callBookCreateService(client pbbook.BookControllerServiceClient) *pbbook.Cr
 	return resp
 }
 
-func callBookGetService(client pbbook.BookControllerServiceClient, id uint32) *pbbook.GetBookResponse {
+func callBookGetService(client pbbook.BookControllerClient, id uint32) *pbbook.GetBookResponse {
 	// Get a Book
 	bookGetInput := &pbbook.GetBookRequest{
 		Id: id,
@@ -192,7 +192,7 @@ func callBookGetService(client pbbook.BookControllerServiceClient, id uint32) *p
 	return resp
 }
 
-func callBookUpdateService(client pbbook.BookControllerServiceClient, book *pbbook.BookInfo) {
+func callBookUpdateService(client pbbook.BookControllerClient, book *pbbook.BookInfo) {
 	// Update a Book
 	input := &pbbook.UpdateBookRequest{
 		Id:          book.Id,
@@ -215,7 +215,7 @@ func callBookUpdateService(client pbbook.BookControllerServiceClient, book *pbbo
 	log.Printf("book update: %v\n", resp)
 }
 
-func callBookQueryService(client pbbook.BookControllerServiceClient) {
+func callBookQueryService(client pbbook.BookControllerClient) {
 	// Update a Book
 	input := &pbbook.QueryBooksRequest{
 		Status:    pbbook.BookStatus_BOOK_STATUS_ACTIVE.Enum(),

@@ -4,7 +4,7 @@ package hello.v1;
 
 import "hello/v1/hello.proto";
 
-service HelloControllerService {
+service HelloController {
     rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
 }
 
