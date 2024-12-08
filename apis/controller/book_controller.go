@@ -2,9 +2,13 @@ package controller
 
 import (
 	"context"
-	"grpc-boot-starter/apis/protogen"
+	protogen "grpc-boot-starter/apis/protov1"
+	"grpc-boot-starter/core/exception"
+	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/service"
+
+	"github.com/bufbuild/protovalidate-go"
 )
 
 func NewBookControllerImpl(bookService *service.BookService) *BookControllerImpl {
@@ -14,8 +18,7 @@ func NewBookControllerImpl(bookService *service.BookService) *BookControllerImpl
 }
 
 type BookControllerImpl struct {
-	protogen.UnimplementedBookControllerServer
-	ControllerBase
+	protogen.UnimplementedBookControllerServiceServer
 	bookService *service.BookService
 }
 
@@ -33,12 +36,16 @@ func (s *BookControllerImpl) GetBook(ctx context.Context, in *protogen.BookGetIn
 // to handle panic properly, return named values.
 func (s *BookControllerImpl) CreateBook(ctx context.Context, in *protogen.BookCreateInput) (bookInfo *protogen.BookInfo, err error) {
 	// validate input
+	if err0 := protovalidate.Validate(in); err0 != nil {
+		logging.Error(ctx).Err(err0).Msgf("BookCreateInput invalid. %v", in)
+		return nil, exception.NewValidationErrorOnFailed(ctx, "BOOK_CREATE_INPUTS_400", err0)
+	}
 	// verify ACL if pass then continue
 	// start Tx
 	ctx = db.BeginTx(ctx)
 	defer func() {
 		r := recover()
-		err = s.deferTxCallback(ctx, r)
+		err = db.RecoverErrorHandle(ctx, r)
 	}()
 	// call service A, B, C etc.
 	bookInfo = s.bookService.CreateBook(ctx, in)
@@ -54,7 +61,7 @@ func (s *BookControllerImpl) UpdateBook(ctx context.Context, in *protogen.BookUp
 	ctx = db.BeginTx(ctx)
 	defer func() {
 		r := recover()
-		err = s.deferTxCallback(ctx, r)
+		err = db.RecoverErrorHandle(ctx, r)
 	}()
 	// call service A, B, C etc.
 	bookInfo = s.bookService.UpdateBook(ctx, in)
@@ -70,7 +77,7 @@ func (s *BookControllerImpl) DeleteBook(ctx context.Context, in *protogen.BookDe
 	ctx = db.BeginTx(ctx)
 	defer func() {
 		r := recover()
-		err = s.deferTxCallback(ctx, r)
+		err = db.RecoverErrorHandle(ctx, r)
 	}()
 	// call service A, B, C etc.
 	resp = s.bookService.DeleteBook(ctx, in)

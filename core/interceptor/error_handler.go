@@ -31,7 +31,7 @@ func HandleErrorGlobal(ctx context.Context, req any, _ *grpc.UnaryServerInfo, ha
 	// translate error to gRPC error
 	if err0 != nil {
 		logging.Error(ctx).Err(err0).Msgf("Req Error: %T, %v", err0, req)
-		err = exception.TranslateToGrpcStatus(err)
+		err = exception.TranslateToGrpcStatus(err0)
 	}
 	return resp, err
 }

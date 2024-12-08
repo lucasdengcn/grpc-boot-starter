@@ -4,8 +4,12 @@ package exception
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"grpc-boot-starter/core/correlation"
+	"strings"
+
+	"github.com/bufbuild/protovalidate-go"
 )
 
 // ServiceError define
@@ -161,7 +165,17 @@ type ValidationError struct {
 }
 
 // NewValidationError creation
+func NewValidationErrorOnFailed(ctx context.Context, errno string, err0 error) *ValidationError {
+	message := fmt.Sprintf("input validation error on fields: %s", ParseFailedFields(err0))
+	return &ValidationError{
+		Errno:         errno,
+		CorrelationId: correlation.CorrelationId(ctx),
+		Message:       message,
+	}
+}
+
 func NewValidationError(ctx context.Context, errno string, message string) *ValidationError {
+	// message := fmt.Sprintf("input validation error on fields: %s", ParseFailedFields(err0))
 	return &ValidationError{
 		Errno:         errno,
 		CorrelationId: correlation.CorrelationId(ctx),
@@ -180,4 +194,23 @@ func (s *ValidationError) Is(err error) bool {
 		return false
 	}
 	return true
+}
+
+// ParseFailedFields try to parse failed fields from error messages.
+func ParseFailedFields(err error) string {
+	if err == nil {
+		return ""
+	}
+	var valErr *protovalidate.ValidationError
+	if ok := errors.As(err, &valErr); ok {
+		//pb := valErr.ToProto()
+		// fmt.Printf("%T", pb)
+		var fields = make([]string, 0, 10)
+		for _, violation := range valErr.Violations {
+			fmt.Println(*violation.FieldPath)
+			fields = append(fields, *violation.FieldPath)
+		}
+		return strings.Join(fields, ", ")
+	}
+	return ""
 }

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"grpc-boot-starter/apis/protogen"
+	protogen "grpc-boot-starter/apis/protov1"
 	"grpc-boot-starter/core/exception"
 	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/core/security"

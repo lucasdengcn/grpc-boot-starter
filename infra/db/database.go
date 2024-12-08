@@ -145,3 +145,20 @@ func GetTx(ctx context.Context) *gorm.DB {
 	}
 	return dbTx
 }
+
+// RecoverErrorHandle, to recover from panic.
+func RecoverErrorHandle(ctx context.Context, r any) error {
+	if r != nil {
+		RollbackTx(ctx)
+		if err, ok := r.(error); ok {
+			logging.Error(ctx).Msgf("Recover Tx Err: %v", r)
+			return err
+		} else {
+			logging.Error(ctx).Msgf("Recover Tx Err: %v", r)
+			return fmt.Errorf("%v", r)
+		}
+	} else {
+		CommitTx(ctx)
+		return nil
+	}
+}

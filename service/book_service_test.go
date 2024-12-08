@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"grpc-boot-starter/apis/protogen"
+	protogen "grpc-boot-starter/apis/protov1"
 	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/security"
 	"grpc-boot-starter/infra/db"

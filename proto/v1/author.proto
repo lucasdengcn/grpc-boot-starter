@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package protogen;
+package proto.v1;
 
 option go_package = "./protogen";
 

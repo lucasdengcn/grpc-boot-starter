@@ -59,7 +59,7 @@ sh client-call.sh
 |Interceptor| Unray | OK |
 |Metrics| OTEL | OK |
 |Tracing| OTEL | OK |
-|Validation| manually on demand |-|
+|Validation| protovalidate-go | OK |
 |Error Handling| Errno naming, Translation| OK |
 |Error Model| Google Richer Error model| OK |
 |Load balancing|client side| - |
@@ -74,7 +74,6 @@ sh client-call.sh
 |Cache|-|-|
 |Messaging|-|-|
 |Distributed|-|-|
-|Bidirection|-|-|
 |Testing|testify|OK|
 |Flow Control| Rate Limit, SHOULD be handled by Gateway |-|
 |API Versioning| PB having backward compatibility on model |-|
@@ -88,6 +87,14 @@ sh client-call.sh
 [Error model](https://google.aip.dev/193#error_model)
 
 [Error proto](https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto)
+
+## Validation
+
+[protovalidate](https://github.com/bufbuild/protovalidate/)
+
+[protovalidate-go](https://github.com/bufbuild/protovalidate-go)
+
+Rules are here. <https://buf.build/bufbuild/protovalidate/docs/main:buf.validate>
 
 ## Health
 
@@ -118,8 +125,23 @@ Golangci-lint aggregates dozens of tools with hundreds of checks. Revive is one 
 
 [gofumpt](https://github.com/mvdan/gofumpt)
 
+[buf.build](https://buf.build/docs/)
+
 ## Git hooks
 
 ```shell
 git config core.hooksPath .git-hooks 
+```
+
+## Buf build
+
+Buf CLI is a great drop-in replacement for protoc
+
+```shell
+# update dependencies
+
+buf dep update
+
+# generate code
+buf generate
 ```

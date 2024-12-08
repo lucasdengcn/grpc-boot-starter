@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package protogen;
+package proto.v1;
 
-import "apis/protogen/hello.proto";
+import "hello.proto";
 
 option go_package = "./protogen";
 
-service HelloController {
+service HelloControllerService {
     rpc SayHello (HelloRequest) returns (HelloResponse);
 }
 

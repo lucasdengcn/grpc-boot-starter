@@ -1,32 +1,36 @@
 syntax = "proto3";
 
-package protogen;
+package proto.v1;
 
+import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
-import "apis/protogen/author.proto";
+import "author.proto";
 
 option go_package = "./protogen";
 
 enum BookStatus {
-    BOOK_STATUS_CREATED = 0;
-    BOOK_STATUS_ACTIVE = 1;
-    BOOK_STATUS_OFFLINE = 2;
+    BOOK_STATUS_UNSPECIFIED = 0;
+    BOOK_STATUS_CREATED = 1;
+    BOOK_STATUS_ACTIVE = 2;
+    BOOK_STATUS_OFFLINE = 3;
 }
 
 enum BookCategory {
-    BOOK_CATEGORY_UNKNOWN = 0;
+    BOOK_CATEGORY_UNSPECIFIED = 0;
     BOOK_CATEGORY_JAVA = 1;
     BOOK_CATEGORY_GO = 2;
     BOOK_CATEGORY_MATH = 3;
 }
 
 message BookCreateInput {
-    string title = 1;
+    string title = 1 [(buf.validate.field).string.min_len = 1,(buf.validate.field).string.max_len = 100];
     string description = 2;
-    uint32 amount = 3;
-    float price = 4;
+    uint32 amount = 3 [(buf.validate.field).uint32.gt = 1];
+    float price = 4 [(buf.validate.field).float.gt = 0];
     BookCategory category = 5;
     Author author = 6;
+    string email = 7 [(buf.validate.field).string.min_len = 0, (buf.validate.field).string.email = true];
+    string cover_url = 8 [(buf.validate.field).string.min_len = 0, (buf.validate.field).string.uri = true];
 }
 
 message BookUpdateInput {

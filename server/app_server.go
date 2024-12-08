@@ -3,7 +3,7 @@ package server
 import (
 	"crypto/tls"
 	"grpc-boot-starter/apis/controller"
-	"grpc-boot-starter/apis/protogen"
+	protogen "grpc-boot-starter/apis/protov1"
 	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/interceptor"
 	"grpc-boot-starter/core/otel"
@@ -72,8 +72,8 @@ func (s *AppServer) registerServiceServers() {
 	channelz.RegisterChannelzServiceToServer(s.serv)
 	// hook services
 	controller.RegisterHealthCheck(s.serv)
-	protogen.RegisterBookControllerServer(s.serv, InitializeBookController())
-	protogen.RegisterHelloControllerServer(s.serv, InitializeHelloController())
+	protogen.RegisterBookControllerServiceServer(s.serv, InitializeBookController())
+	protogen.RegisterHelloControllerServiceServer(s.serv, InitializeHelloController())
 	// update service status
 	controller.UpdateServerServing()
 	//
