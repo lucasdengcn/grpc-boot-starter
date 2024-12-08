@@ -139,8 +139,10 @@ Buf CLI is a great drop-in replacement for protoc
 
 ```shell
 # update dependencies
-
 buf dep update
+
+# lint on proto files
+buf lint
 
 # generate code
 buf generate
