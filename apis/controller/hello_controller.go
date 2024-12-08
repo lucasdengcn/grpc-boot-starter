@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	pb "grpc-boot-starter/apis/protov1"
+	pb "grpc-boot-starter/apis/protogen/hello/v1"
 	"log"
 )
 
@@ -15,7 +15,7 @@ type HelloControllerImpl struct {
 	pb.UnimplementedHelloControllerServiceServer
 }
 
-func (s *HelloControllerImpl) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
+func (s *HelloControllerImpl) SayHello(ctx context.Context, in *pb.SayHelloRequest) (*pb.SayHelloResponse, error) {
 	log.Printf("Income request. %v\n", in)
-	return &pb.HelloResponse{Message: "Hello " + in.Name}, nil
+	return &pb.SayHelloResponse{Message: "Hello " + in.Name}, nil
 }

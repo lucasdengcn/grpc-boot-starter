@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package book.v1;
+
+import "book/v1/book.proto";
+
+service BookControllerService {
+    rpc CreateBook (CreateBookRequest) returns (CreateBookResponse);
+    rpc UpdateBook (UpdateBookRequest) returns (UpdateBookResponse);
+    rpc DeleteBook (DeleteBookRequest) returns (DeleteBookResponse);
+    rpc GetBook (GetBookRequest) returns (GetBookResponse);
+    rpc QueryBooks (QueryBooksRequest) returns (QueryBooksResponse);
+}

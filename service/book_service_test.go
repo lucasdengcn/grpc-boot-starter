@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	protogen "grpc-boot-starter/apis/protov1"
+	protogen "grpc-boot-starter/apis/protogen/book/v1"
 	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/security"
 	"grpc-boot-starter/infra/db"
@@ -42,7 +42,7 @@ func After() {
 }
 
 func TestCreateBook(t *testing.T) {
-	in := &protogen.BookCreateInput{
+	in := &protogen.CreateBookRequest{
 		Title:       "Book A",
 		Description: "This is Book A",
 		Amount:      100,
@@ -65,7 +65,7 @@ func TestGetBook(t *testing.T) {
 		r := recover()
 		assert.Nil(t, r)
 	}()
-	in := &protogen.BookGetInput{
+	in := &protogen.GetBookRequest{
 		Id: 4,
 	}
 	//
@@ -81,7 +81,7 @@ func TestGetBookNonExist(t *testing.T) {
 		r := recover()
 		assert.NotNil(t, r)
 	}()
-	in := &protogen.BookGetInput{
+	in := &protogen.GetBookRequest{
 		Id: 400000000,
 	}
 	//
@@ -90,7 +90,7 @@ func TestGetBookNonExist(t *testing.T) {
 }
 
 func TestUpdateBook(t *testing.T) {
-	in := &protogen.BookUpdateInput{
+	in := &protogen.UpdateBookRequest{
 		Id:          4,
 		Title:       "Book A",
 		Description: "This is Book A",
@@ -114,7 +114,7 @@ func TestUpdateBookNonExists(t *testing.T) {
 		r := recover()
 		assert.NotNil(t, r)
 	}()
-	in := &protogen.BookUpdateInput{
+	in := &protogen.UpdateBookRequest{
 		Id:          999999999,
 		Title:       "Book A",
 		Description: "This is Book A",

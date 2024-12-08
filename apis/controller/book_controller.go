@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	protogen "grpc-boot-starter/apis/protov1"
+	pbbook "grpc-boot-starter/apis/protogen/book/v1"
 	"grpc-boot-starter/core/exception"
 	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/infra/db"
@@ -18,23 +18,26 @@ func NewBookControllerImpl(bookService *service.BookService) *BookControllerImpl
 }
 
 type BookControllerImpl struct {
-	protogen.UnimplementedBookControllerServiceServer
+	pbbook.UnimplementedBookControllerServiceServer
 	bookService *service.BookService
 }
 
 // GetBook get book detail via id
 // to handle panic properly, return named values.
-func (s *BookControllerImpl) GetBook(ctx context.Context, in *protogen.BookGetInput) (resp *protogen.BookInfo, err error) {
+func (s *BookControllerImpl) GetBook(ctx context.Context, in *pbbook.GetBookRequest) (resp *pbbook.GetBookResponse, err error) {
 	// validate input
 	// verify ACL if pass then continue
 	// call service
-	resp = s.bookService.GetBook(ctx, in)
+	bookInfo := s.bookService.GetBook(ctx, in)
+	resp = &pbbook.GetBookResponse{
+		Book: bookInfo,
+	}
 	return
 }
 
 // CreateBook create a book via input detail
 // to handle panic properly, return named values.
-func (s *BookControllerImpl) CreateBook(ctx context.Context, in *protogen.BookCreateInput) (bookInfo *protogen.BookInfo, err error) {
+func (s *BookControllerImpl) CreateBook(ctx context.Context, in *pbbook.CreateBookRequest) (resp *pbbook.CreateBookResponse, err error) {
 	// validate input
 	if err0 := protovalidate.Validate(in); err0 != nil {
 		logging.Error(ctx).Err(err0).Msgf("BookCreateInput invalid. %v", in)
@@ -48,13 +51,17 @@ func (s *BookControllerImpl) CreateBook(ctx context.Context, in *protogen.BookCr
 		err = db.RecoverErrorHandle(ctx, r)
 	}()
 	// call service A, B, C etc.
-	bookInfo = s.bookService.CreateBook(ctx, in)
+	bookInfo := s.bookService.CreateBook(ctx, in)
+	resp = &pbbook.CreateBookResponse{
+		Book:    bookInfo,
+		Success: true,
+	}
 	return
 }
 
 // UpdateBook update a book via input detail, start db tx
 // to handle panic properly, return named values.
-func (s *BookControllerImpl) UpdateBook(ctx context.Context, in *protogen.BookUpdateInput) (bookInfo *protogen.BookInfo, err error) {
+func (s *BookControllerImpl) UpdateBook(ctx context.Context, in *pbbook.UpdateBookRequest) (resp *pbbook.UpdateBookResponse, err error) {
 	// validate input
 	// verify ACL if pass then continue
 	// start Tx
@@ -64,13 +71,17 @@ func (s *BookControllerImpl) UpdateBook(ctx context.Context, in *protogen.BookUp
 		err = db.RecoverErrorHandle(ctx, r)
 	}()
 	// call service A, B, C etc.
-	bookInfo = s.bookService.UpdateBook(ctx, in)
+	bookInfo := s.bookService.UpdateBook(ctx, in)
+	resp = &pbbook.UpdateBookResponse{
+		Book:    bookInfo,
+		Success: true,
+	}
 	return
 }
 
 // DeleteBook delete a book via input, start db tx
 // to handle panic properly, return named values.
-func (s *BookControllerImpl) DeleteBook(ctx context.Context, in *protogen.BookDeleteInput) (resp *protogen.BookDeleteResponse, err error) {
+func (s *BookControllerImpl) DeleteBook(ctx context.Context, in *pbbook.DeleteBookRequest) (resp *pbbook.DeleteBookResponse, err error) {
 	// validate input
 	// verify ACL if pass then continue
 	// start Tx
@@ -80,13 +91,17 @@ func (s *BookControllerImpl) DeleteBook(ctx context.Context, in *protogen.BookDe
 		err = db.RecoverErrorHandle(ctx, r)
 	}()
 	// call service A, B, C etc.
-	resp = s.bookService.DeleteBook(ctx, in)
+	ok := s.bookService.DeleteBook(ctx, in)
+	resp = &pbbook.DeleteBookResponse{
+		Id:      in.Id,
+		Success: ok,
+	}
 	return
 }
 
 // QueryBooks query books via input criteria.
 // to handle panic properly, return named values.
-func (s *BookControllerImpl) QueryBooks(ctx context.Context, in *protogen.BookQueryInput) (resp *protogen.BookInfoListResponse, err error) {
+func (s *BookControllerImpl) QueryBooks(ctx context.Context, in *pbbook.QueryBooksRequest) (resp *pbbook.QueryBooksResponse, err error) {
 	// validate input
 	// verify ACL if pass then continue
 	resp = s.bookService.QueryBooks(ctx, in)

@@ -1,8 +1,6 @@
 syntax = "proto3";
 
-package proto.v1;
-
-option go_package = "./protogen";
+package book.v1;
 
 message Author {
   string name = 1;

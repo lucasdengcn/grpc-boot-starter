@@ -1,12 +1,11 @@
 syntax = "proto3";
 
-package proto.v1;
+// package should match with the folder structure.
+package book.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
-import "author.proto";
-
-option go_package = "./protogen";
+import "book/v1/author.proto";
 
 enum BookStatus {
     BOOK_STATUS_UNSPECIFIED = 0;
@@ -22,7 +21,7 @@ enum BookCategory {
     BOOK_CATEGORY_MATH = 3;
 }
 
-message BookCreateInput {
+message CreateBookRequest {
     string title = 1 [(buf.validate.field).string.min_len = 1,(buf.validate.field).string.max_len = 100];
     string description = 2;
     uint32 amount = 3 [(buf.validate.field).uint32.gt = 1];
@@ -33,7 +32,12 @@ message BookCreateInput {
     string cover_url = 8 [(buf.validate.field).string.min_len = 0, (buf.validate.field).string.uri = true];
 }
 
-message BookUpdateInput {
+message CreateBookResponse {
+    BookInfo book = 1;
+    bool success = 2;
+}
+
+message UpdateBookRequest {
     uint32 id = 1;
     string title = 2;
     string description = 3;
@@ -43,25 +47,34 @@ message BookUpdateInput {
     Author author = 7;
 }
 
-message BookStatusUpdateInput {
-    uint32 id = 1;
-    BookStatus status = 2;
+message UpdateBookResponse {
+    BookInfo book = 1;
+    bool success = 2;
 }
 
-message BookDeleteInput {
+message DeleteBookRequest {
     uint32 id = 1;
 }
 
-message BookDeleteResponse {
+message DeleteBookResponse {
     uint32 id = 1;
     bool success = 2;
 }
 
-message BookGetInput {
+message UpdateBookStatusRequest {
+    uint32 id = 1;
+    BookStatus status = 2;
+}
+
+message GetBookRequest {
     uint32 id = 1;
 }
 
-message BookQueryInput {
+message GetBookResponse {
+    BookInfo book = 1;
+}
+
+message QueryBooksRequest {
     optional BookCategory category = 1;
     optional BookStatus status = 2;
     //
@@ -85,12 +98,16 @@ message BookInfo {
     bool deleted = 12;
 }
 
-message BookInfoListResponse {
-    repeated BookInfo books = 1;
+message Pagination {
     uint32 page_size = 2;
     uint32 page_index = 3;
     uint32 total_pages = 4;
     bool has_next = 5;
     bool has_previous = 6;
     uint32 total_items = 7;
+}
+
+message QueryBooksResponse {
+    repeated BookInfo books = 1;
+    Pagination page_info  = 2;
 }

@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: hello_controller.proto
+// source: hello/v1/hello_controller.proto
 
-package protov1
+package hellov1
 
 import (
 	context "context"
@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	HelloControllerService_SayHello_FullMethodName = "/proto.v1.HelloControllerService/SayHello"
+	HelloControllerService_SayHello_FullMethodName = "/hello.v1.HelloControllerService/SayHello"
 )
 
 // HelloControllerServiceClient is the client API for HelloControllerService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HelloControllerServiceClient interface {
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
+	SayHello(ctx context.Context, in *SayHelloRequest, opts ...grpc.CallOption) (*SayHelloResponse, error)
 }
 
 type helloControllerServiceClient struct {
@@ -37,9 +37,9 @@ func NewHelloControllerServiceClient(cc grpc.ClientConnInterface) HelloControlle
 	return &helloControllerServiceClient{cc}
 }
 
-func (c *helloControllerServiceClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error) {
+func (c *helloControllerServiceClient) SayHello(ctx context.Context, in *SayHelloRequest, opts ...grpc.CallOption) (*SayHelloResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(HelloResponse)
+	out := new(SayHelloResponse)
 	err := c.cc.Invoke(ctx, HelloControllerService_SayHello_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *helloControllerServiceClient) SayHello(ctx context.Context, in *HelloRe
 // All implementations must embed UnimplementedHelloControllerServiceServer
 // for forward compatibility.
 type HelloControllerServiceServer interface {
-	SayHello(context.Context, *HelloRequest) (*HelloResponse, error)
+	SayHello(context.Context, *SayHelloRequest) (*SayHelloResponse, error)
 	mustEmbedUnimplementedHelloControllerServiceServer()
 }
 
@@ -62,7 +62,7 @@ type HelloControllerServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedHelloControllerServiceServer struct{}
 
-func (UnimplementedHelloControllerServiceServer) SayHello(context.Context, *HelloRequest) (*HelloResponse, error) {
+func (UnimplementedHelloControllerServiceServer) SayHello(context.Context, *SayHelloRequest) (*SayHelloResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
 func (UnimplementedHelloControllerServiceServer) mustEmbedUnimplementedHelloControllerServiceServer() {
@@ -88,7 +88,7 @@ func RegisterHelloControllerServiceServer(s grpc.ServiceRegistrar, srv HelloCont
 }
 
 func _HelloControllerService_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+	in := new(SayHelloRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func _HelloControllerService_SayHello_Handler(srv interface{}, ctx context.Conte
 		FullMethod: HelloControllerService_SayHello_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HelloControllerServiceServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(HelloControllerServiceServer).SayHello(ctx, req.(*SayHelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -109,7 +109,7 @@ func _HelloControllerService_SayHello_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var HelloControllerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.v1.HelloControllerService",
+	ServiceName: "hello.v1.HelloControllerService",
 	HandlerType: (*HelloControllerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -118,5 +118,5 @@ var HelloControllerService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "hello_controller.proto",
+	Metadata: "hello/v1/hello_controller.proto",
 }

@@ -3,7 +3,7 @@ package prototest
 import (
 	"errors"
 	"fmt"
-	pb "grpc-boot-starter/apis/protov1"
+	pb "grpc-boot-starter/apis/protogen/book/v1"
 	"testing"
 
 	"github.com/bufbuild/protovalidate-go"
@@ -12,7 +12,7 @@ import (
 
 // TestBook on book creation and validation
 func TestBook(t *testing.T) {
-	book := &pb.BookCreateInput{
+	book := &pb.CreateBookRequest{
 		Title:  "111",
 		Price:  10,
 		Amount: 0,
@@ -33,7 +33,7 @@ func TestBook(t *testing.T) {
 }
 
 func TestBookMaxLength(t *testing.T) {
-	book := &pb.BookCreateInput{
+	book := &pb.CreateBookRequest{
 		Title:  "1234567890123",
 		Price:  10,
 		Amount: 10,
@@ -52,7 +52,7 @@ func TestBookMaxLength(t *testing.T) {
 
 func TestBookEmail(t *testing.T) {
 	email := "abc"
-	book := &pb.BookCreateInput{
+	book := &pb.CreateBookRequest{
 		Title:    "123456789",
 		Price:    10,
 		Amount:   10,

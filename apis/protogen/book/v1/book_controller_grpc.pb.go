@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: book_controller.proto
+// source: book/v1/book_controller.proto
 
-package protov1
+package bookv1
 
 import (
 	context "context"
@@ -19,22 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BookControllerService_CreateBook_FullMethodName = "/proto.v1.BookControllerService/CreateBook"
-	BookControllerService_UpdateBook_FullMethodName = "/proto.v1.BookControllerService/UpdateBook"
-	BookControllerService_DeleteBook_FullMethodName = "/proto.v1.BookControllerService/DeleteBook"
-	BookControllerService_GetBook_FullMethodName    = "/proto.v1.BookControllerService/GetBook"
-	BookControllerService_QueryBooks_FullMethodName = "/proto.v1.BookControllerService/QueryBooks"
+	BookControllerService_CreateBook_FullMethodName = "/book.v1.BookControllerService/CreateBook"
+	BookControllerService_UpdateBook_FullMethodName = "/book.v1.BookControllerService/UpdateBook"
+	BookControllerService_DeleteBook_FullMethodName = "/book.v1.BookControllerService/DeleteBook"
+	BookControllerService_GetBook_FullMethodName    = "/book.v1.BookControllerService/GetBook"
+	BookControllerService_QueryBooks_FullMethodName = "/book.v1.BookControllerService/QueryBooks"
 )
 
 // BookControllerServiceClient is the client API for BookControllerService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BookControllerServiceClient interface {
-	CreateBook(ctx context.Context, in *BookCreateInput, opts ...grpc.CallOption) (*BookInfo, error)
-	UpdateBook(ctx context.Context, in *BookUpdateInput, opts ...grpc.CallOption) (*BookInfo, error)
-	DeleteBook(ctx context.Context, in *BookDeleteInput, opts ...grpc.CallOption) (*BookDeleteResponse, error)
-	GetBook(ctx context.Context, in *BookGetInput, opts ...grpc.CallOption) (*BookInfo, error)
-	QueryBooks(ctx context.Context, in *BookQueryInput, opts ...grpc.CallOption) (*BookInfoListResponse, error)
+	CreateBook(ctx context.Context, in *CreateBookRequest, opts ...grpc.CallOption) (*CreateBookResponse, error)
+	UpdateBook(ctx context.Context, in *UpdateBookRequest, opts ...grpc.CallOption) (*UpdateBookResponse, error)
+	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*DeleteBookResponse, error)
+	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*GetBookResponse, error)
+	QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpc.CallOption) (*QueryBooksResponse, error)
 }
 
 type bookControllerServiceClient struct {
@@ -45,9 +45,9 @@ func NewBookControllerServiceClient(cc grpc.ClientConnInterface) BookControllerS
 	return &bookControllerServiceClient{cc}
 }
 
-func (c *bookControllerServiceClient) CreateBook(ctx context.Context, in *BookCreateInput, opts ...grpc.CallOption) (*BookInfo, error) {
+func (c *bookControllerServiceClient) CreateBook(ctx context.Context, in *CreateBookRequest, opts ...grpc.CallOption) (*CreateBookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BookInfo)
+	out := new(CreateBookResponse)
 	err := c.cc.Invoke(ctx, BookControllerService_CreateBook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -55,9 +55,9 @@ func (c *bookControllerServiceClient) CreateBook(ctx context.Context, in *BookCr
 	return out, nil
 }
 
-func (c *bookControllerServiceClient) UpdateBook(ctx context.Context, in *BookUpdateInput, opts ...grpc.CallOption) (*BookInfo, error) {
+func (c *bookControllerServiceClient) UpdateBook(ctx context.Context, in *UpdateBookRequest, opts ...grpc.CallOption) (*UpdateBookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BookInfo)
+	out := new(UpdateBookResponse)
 	err := c.cc.Invoke(ctx, BookControllerService_UpdateBook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -65,9 +65,9 @@ func (c *bookControllerServiceClient) UpdateBook(ctx context.Context, in *BookUp
 	return out, nil
 }
 
-func (c *bookControllerServiceClient) DeleteBook(ctx context.Context, in *BookDeleteInput, opts ...grpc.CallOption) (*BookDeleteResponse, error) {
+func (c *bookControllerServiceClient) DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*DeleteBookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BookDeleteResponse)
+	out := new(DeleteBookResponse)
 	err := c.cc.Invoke(ctx, BookControllerService_DeleteBook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -75,9 +75,9 @@ func (c *bookControllerServiceClient) DeleteBook(ctx context.Context, in *BookDe
 	return out, nil
 }
 
-func (c *bookControllerServiceClient) GetBook(ctx context.Context, in *BookGetInput, opts ...grpc.CallOption) (*BookInfo, error) {
+func (c *bookControllerServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*GetBookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BookInfo)
+	out := new(GetBookResponse)
 	err := c.cc.Invoke(ctx, BookControllerService_GetBook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -85,9 +85,9 @@ func (c *bookControllerServiceClient) GetBook(ctx context.Context, in *BookGetIn
 	return out, nil
 }
 
-func (c *bookControllerServiceClient) QueryBooks(ctx context.Context, in *BookQueryInput, opts ...grpc.CallOption) (*BookInfoListResponse, error) {
+func (c *bookControllerServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpc.CallOption) (*QueryBooksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BookInfoListResponse)
+	out := new(QueryBooksResponse)
 	err := c.cc.Invoke(ctx, BookControllerService_QueryBooks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -99,11 +99,11 @@ func (c *bookControllerServiceClient) QueryBooks(ctx context.Context, in *BookQu
 // All implementations must embed UnimplementedBookControllerServiceServer
 // for forward compatibility.
 type BookControllerServiceServer interface {
-	CreateBook(context.Context, *BookCreateInput) (*BookInfo, error)
-	UpdateBook(context.Context, *BookUpdateInput) (*BookInfo, error)
-	DeleteBook(context.Context, *BookDeleteInput) (*BookDeleteResponse, error)
-	GetBook(context.Context, *BookGetInput) (*BookInfo, error)
-	QueryBooks(context.Context, *BookQueryInput) (*BookInfoListResponse, error)
+	CreateBook(context.Context, *CreateBookRequest) (*CreateBookResponse, error)
+	UpdateBook(context.Context, *UpdateBookRequest) (*UpdateBookResponse, error)
+	DeleteBook(context.Context, *DeleteBookRequest) (*DeleteBookResponse, error)
+	GetBook(context.Context, *GetBookRequest) (*GetBookResponse, error)
+	QueryBooks(context.Context, *QueryBooksRequest) (*QueryBooksResponse, error)
 	mustEmbedUnimplementedBookControllerServiceServer()
 }
 
@@ -114,19 +114,19 @@ type BookControllerServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBookControllerServiceServer struct{}
 
-func (UnimplementedBookControllerServiceServer) CreateBook(context.Context, *BookCreateInput) (*BookInfo, error) {
+func (UnimplementedBookControllerServiceServer) CreateBook(context.Context, *CreateBookRequest) (*CreateBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBook not implemented")
 }
-func (UnimplementedBookControllerServiceServer) UpdateBook(context.Context, *BookUpdateInput) (*BookInfo, error) {
+func (UnimplementedBookControllerServiceServer) UpdateBook(context.Context, *UpdateBookRequest) (*UpdateBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBook not implemented")
 }
-func (UnimplementedBookControllerServiceServer) DeleteBook(context.Context, *BookDeleteInput) (*BookDeleteResponse, error) {
+func (UnimplementedBookControllerServiceServer) DeleteBook(context.Context, *DeleteBookRequest) (*DeleteBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBook not implemented")
 }
-func (UnimplementedBookControllerServiceServer) GetBook(context.Context, *BookGetInput) (*BookInfo, error) {
+func (UnimplementedBookControllerServiceServer) GetBook(context.Context, *GetBookRequest) (*GetBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBook not implemented")
 }
-func (UnimplementedBookControllerServiceServer) QueryBooks(context.Context, *BookQueryInput) (*BookInfoListResponse, error) {
+func (UnimplementedBookControllerServiceServer) QueryBooks(context.Context, *QueryBooksRequest) (*QueryBooksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryBooks not implemented")
 }
 func (UnimplementedBookControllerServiceServer) mustEmbedUnimplementedBookControllerServiceServer() {}
@@ -151,7 +151,7 @@ func RegisterBookControllerServiceServer(s grpc.ServiceRegistrar, srv BookContro
 }
 
 func _BookControllerService_CreateBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BookCreateInput)
+	in := new(CreateBookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -163,13 +163,13 @@ func _BookControllerService_CreateBook_Handler(srv interface{}, ctx context.Cont
 		FullMethod: BookControllerService_CreateBook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookControllerServiceServer).CreateBook(ctx, req.(*BookCreateInput))
+		return srv.(BookControllerServiceServer).CreateBook(ctx, req.(*CreateBookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _BookControllerService_UpdateBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BookUpdateInput)
+	in := new(UpdateBookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -181,13 +181,13 @@ func _BookControllerService_UpdateBook_Handler(srv interface{}, ctx context.Cont
 		FullMethod: BookControllerService_UpdateBook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookControllerServiceServer).UpdateBook(ctx, req.(*BookUpdateInput))
+		return srv.(BookControllerServiceServer).UpdateBook(ctx, req.(*UpdateBookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _BookControllerService_DeleteBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BookDeleteInput)
+	in := new(DeleteBookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -199,13 +199,13 @@ func _BookControllerService_DeleteBook_Handler(srv interface{}, ctx context.Cont
 		FullMethod: BookControllerService_DeleteBook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookControllerServiceServer).DeleteBook(ctx, req.(*BookDeleteInput))
+		return srv.(BookControllerServiceServer).DeleteBook(ctx, req.(*DeleteBookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _BookControllerService_GetBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BookGetInput)
+	in := new(GetBookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -217,13 +217,13 @@ func _BookControllerService_GetBook_Handler(srv interface{}, ctx context.Context
 		FullMethod: BookControllerService_GetBook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookControllerServiceServer).GetBook(ctx, req.(*BookGetInput))
+		return srv.(BookControllerServiceServer).GetBook(ctx, req.(*GetBookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _BookControllerService_QueryBooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BookQueryInput)
+	in := new(QueryBooksRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -235,7 +235,7 @@ func _BookControllerService_QueryBooks_Handler(srv interface{}, ctx context.Cont
 		FullMethod: BookControllerService_QueryBooks_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookControllerServiceServer).QueryBooks(ctx, req.(*BookQueryInput))
+		return srv.(BookControllerServiceServer).QueryBooks(ctx, req.(*QueryBooksRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -244,7 +244,7 @@ func _BookControllerService_QueryBooks_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var BookControllerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.v1.BookControllerService",
+	ServiceName: "book.v1.BookControllerService",
 	HandlerType: (*BookControllerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -269,5 +269,5 @@ var BookControllerService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "book_controller.proto",
+	Metadata: "book/v1/book_controller.proto",
 }

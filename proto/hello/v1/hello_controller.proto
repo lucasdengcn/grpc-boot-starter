@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package hello.v1;
+
+import "hello/v1/hello.proto";
+
+service HelloControllerService {
+    rpc SayHello (SayHelloRequest) returns (SayHelloResponse);
+}
+

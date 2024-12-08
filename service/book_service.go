@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	protogen "grpc-boot-starter/apis/protov1"
+	protogen "grpc-boot-starter/apis/protogen/book/v1"
 	"grpc-boot-starter/core/exception"
 	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/core/security"
@@ -65,7 +65,7 @@ func (s *BookService) mapToBookInfo(book *entity.Book) *protogen.BookInfo {
 
 // GetBook to find book's detail
 // panic if repository error
-func (s *BookService) GetBook(ctx context.Context, in *protogen.BookGetInput) *protogen.BookInfo {
+func (s *BookService) GetBook(ctx context.Context, in *protogen.GetBookRequest) *protogen.BookInfo {
 	//
 	principle := security.CurrentUser(ctx)
 	logging.Debug(ctx).Msgf("current user: %v", principle.GetID())
@@ -83,7 +83,7 @@ func (s *BookService) GetBook(ctx context.Context, in *protogen.BookGetInput) *p
 
 // CreateBook to create book via input
 // panic if repository error
-func (s *BookService) CreateBook(ctx context.Context, in *protogen.BookCreateInput) *protogen.BookInfo {
+func (s *BookService) CreateBook(ctx context.Context, in *protogen.CreateBookRequest) *protogen.BookInfo {
 	logging.Info(ctx).Msgf("CreateBook criteria: %v", in)
 	book := &entity.Book{
 		Title:       in.Title,
@@ -106,7 +106,7 @@ func (s *BookService) CreateBook(ctx context.Context, in *protogen.BookCreateInp
 
 // UpdateBook to update book via id
 // panic if repository error
-func (s *BookService) UpdateBook(ctx context.Context, in *protogen.BookUpdateInput) *protogen.BookInfo {
+func (s *BookService) UpdateBook(ctx context.Context, in *protogen.UpdateBookRequest) *protogen.BookInfo {
 	logging.Info(ctx).Msgf("UpdateBook criteria: %v", in)
 	book := &entity.Book{
 		Model: gorm.Model{
@@ -134,22 +134,19 @@ func (s *BookService) UpdateBook(ctx context.Context, in *protogen.BookUpdateInp
 
 // DeleteBook to delete book via id
 // panic if repository error
-func (s *BookService) DeleteBook(ctx context.Context, in *protogen.BookDeleteInput) *protogen.BookDeleteResponse {
+func (s *BookService) DeleteBook(ctx context.Context, in *protogen.DeleteBookRequest) bool {
 	logging.Info(ctx).Msgf("DeleteBook criteria: %v", in)
 	ok, err := s.bookRepository.Delete(ctx, in.Id)
 	if err != nil {
 		logging.Error(ctx).Err(err).Msgf("DeleteBook Error. id:%v", in.Id)
 		panic(exception.NewRepositoryError(ctx, errBookDelete500, err.Error()))
 	}
-	return &protogen.BookDeleteResponse{
-		Id:      in.Id,
-		Success: ok,
-	}
+	return ok
 }
 
 // QueryBooks to find books via input criteria
 // panic if repository error
-func (s *BookService) QueryBooks(ctx context.Context, in *protogen.BookQueryInput) *protogen.BookInfoListResponse {
+func (s *BookService) QueryBooks(ctx context.Context, in *protogen.QueryBooksRequest) *protogen.QueryBooksResponse {
 	// prepare query criteria
 	logging.Info(ctx).Msgf("QueryBooks criteria: %v", in)
 	var status int32
@@ -179,24 +176,28 @@ func (s *BookService) QueryBooks(ctx context.Context, in *protogen.BookQueryInpu
 		totalPages += 1
 	}
 	if bookList == nil {
-		return &protogen.BookInfoListResponse{
-			Books:       nil,
+		return &protogen.QueryBooksResponse{
+			Books: nil,
+			PageInfo: &protogen.Pagination{
+				TotalItems:  count,
+				TotalPages:  totalPages,
+				PageSize:    in.PageSize,
+				PageIndex:   in.PageIndex,
+				HasNext:     false,
+				HasPrevious: totalPages > 0,
+			},
+		}
+	}
+	// prepare and return
+	var output = &protogen.QueryBooksResponse{
+		PageInfo: &protogen.Pagination{
 			TotalItems:  count,
 			TotalPages:  totalPages,
 			PageSize:    in.PageSize,
 			PageIndex:   in.PageIndex,
-			HasNext:     false,
-			HasPrevious: totalPages > 0,
-		}
-	}
-	// prepare and return
-	var output = &protogen.BookInfoListResponse{
-		TotalItems:  count,
-		TotalPages:  totalPages,
-		PageSize:    in.PageSize,
-		PageIndex:   in.PageIndex,
-		HasNext:     totalPages > in.PageIndex,
-		HasPrevious: in.PageIndex > 1,
+			HasNext:     totalPages > in.PageIndex,
+			HasPrevious: in.PageIndex > 1,
+		},
 	}
 	for _, book := range bookList {
 		output.Books = append(output.Books, s.mapToBookInfo(book))

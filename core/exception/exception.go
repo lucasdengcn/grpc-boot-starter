@@ -1,6 +1,7 @@
 package exception
 
 // to avoid conflict go errors package
+// errno naming convention: MODULE_SUBMODULE_ACTION_HTTP-STATUS-CODE
 
 import (
 	"context"
@@ -35,10 +36,7 @@ func (e *ServiceError) Error() string {
 
 func (s *ServiceError) Is(err error) bool {
 	_, ok := err.(*ServiceError)
-	if !ok {
-		return false
-	}
-	return true
+	return ok
 }
 
 // EntityNotFoundError define
@@ -64,10 +62,7 @@ func (e *EntityNotFoundError) Error() string {
 
 func (s *EntityNotFoundError) Is(err error) bool {
 	_, ok := err.(*EntityNotFoundError)
-	if !ok {
-		return false
-	}
-	return true
+	return ok
 }
 
 // RepositoryError
@@ -93,10 +88,7 @@ func (e *RepositoryError) Error() string {
 
 func (s *RepositoryError) Is(err error) bool {
 	_, ok := err.(*RepositoryError)
-	if !ok {
-		return false
-	}
-	return true
+	return ok
 }
 
 // ACLError
@@ -122,10 +114,7 @@ func (e *ACLError) Error() string {
 
 func (s *ACLError) Is(err error) bool {
 	_, ok := err.(*ACLError)
-	if !ok {
-		return false
-	}
-	return true
+	return ok
 }
 
 // AuthError
@@ -151,10 +140,7 @@ func (e *AuthError) Error() string {
 
 func (s *AuthError) Is(err error) bool {
 	_, ok := err.(*AuthError)
-	if !ok {
-		return false
-	}
-	return true
+	return ok
 }
 
 // ValidationError
@@ -190,10 +176,7 @@ func (e *ValidationError) Error() string {
 
 func (s *ValidationError) Is(err error) bool {
 	_, ok := err.(*ValidationError)
-	if !ok {
-		return false
-	}
-	return true
+	return ok
 }
 
 // ParseFailedFields try to parse failed fields from error messages.

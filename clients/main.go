@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	protogen "grpc-boot-starter/apis/protov1"
+	pbbook "grpc-boot-starter/apis/protogen/book/v1"
+	pbhello "grpc-boot-starter/apis/protogen/hello/v1"
 	"log"
 	"path/filepath"
 	"runtime"
@@ -85,17 +86,17 @@ func main() {
 	defer conn.Close()
 
 	// create a new service client
-	helloServiceClient := protogen.NewHelloControllerServiceClient(conn)
+	helloServiceClient := pbhello.NewHelloControllerServiceClient(conn)
 	callHelloService(helloServiceClient)
 	//
-	bookServiceClient := protogen.NewBookControllerServiceClient(conn)
+	bookServiceClient := pbbook.NewBookControllerServiceClient(conn)
 	//
 	for i := 0; i < 2; i++ {
 		go func() {
-			callBookCreateService(bookServiceClient)
-			// callBookUpdateService(bookServiceClient, bookInfo)
-			// callBookQueryService(bookServiceClient)
-			// callBookGetService(bookServiceClient, bookInfo.Id)
+			createBookResp := callBookCreateService(bookServiceClient)
+			callBookUpdateService(bookServiceClient, createBookResp.Book)
+			callBookQueryService(bookServiceClient)
+			callBookGetService(bookServiceClient, createBookResp.Book.Id)
 		}()
 	}
 	//
@@ -122,25 +123,25 @@ func fetchToken() *oauth2.Token {
 	}
 }
 
-func callHelloService(client protogen.HelloControllerServiceClient) {
+func callHelloService(client pbhello.HelloControllerServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	resp, err := client.SayHello(ctx, &protogen.HelloRequest{Name: "Lucas"})
+	resp, err := client.SayHello(ctx, &pbhello.SayHelloRequest{Name: "Lucas"})
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println(resp)
 }
 
-func callBookCreateService(client protogen.BookControllerServiceClient) *protogen.BookInfo {
+func callBookCreateService(client pbbook.BookControllerServiceClient) *pbbook.CreateBookResponse {
 	// Create a Book
-	bookCreateInput := &protogen.BookCreateInput{
+	bookCreateInput := &pbbook.CreateBookRequest{
 		Title:       "Book A Long title long title long title long title",
 		Description: "This is Book A",
 		Amount:      100,
 		Price:       10.0,
-		Category:    protogen.BookCategory_BOOK_CATEGORY_JAVA,
-		Author: &protogen.Author{
+		Category:    pbbook.BookCategory_BOOK_CATEGORY_JAVA,
+		Author: &pbbook.Author{
 			Name: "Author J",
 		},
 		Email:    "abc@example.com",
@@ -149,17 +150,17 @@ func callBookCreateService(client protogen.BookControllerServiceClient) *protoge
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	//
-	bookInfo, err := client.CreateBook(ctx, bookCreateInput)
+	resp, err := client.CreateBook(ctx, bookCreateInput)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("book create: %v\n", bookInfo)
-	return bookInfo
+	log.Printf("book create: %v\n", resp)
+	return resp
 }
 
-func callBookGetService(client protogen.BookControllerServiceClient, id uint32) *protogen.BookInfo {
+func callBookGetService(client pbbook.BookControllerServiceClient, id uint32) *pbbook.GetBookResponse {
 	// Get a Book
-	bookGetInput := &protogen.BookGetInput{
+	bookGetInput := &pbbook.GetBookRequest{
 		Id: id,
 	}
 	// Create metadata and context.
@@ -170,13 +171,13 @@ func callBookGetService(client protogen.BookControllerServiceClient, id uint32) 
 	defer cancel()
 	//
 	var header, trailer metadata.MD
-	bookInfo, err := client.GetBook(ctx, bookGetInput, grpc.Header(&header), grpc.Trailer(&trailer), grpc.WaitForReady(true))
+	resp, err := client.GetBook(ctx, bookGetInput, grpc.Header(&header), grpc.Trailer(&trailer), grpc.WaitForReady(true))
 	if err != nil {
 		got := status.Code(err)
 		log.Println(got)
 		log.Fatal(err)
 	}
-	log.Printf("book get: %v\n", bookInfo)
+	log.Printf("book get: %v\n", resp)
 	// Get header from server
 	fmt.Println("Received headers:")
 	for k, v := range header {
@@ -188,19 +189,19 @@ func callBookGetService(client protogen.BookControllerServiceClient, id uint32) 
 		fmt.Printf("%s: %v\n", k, v)
 	}
 	//
-	return bookInfo
+	return resp
 }
 
-func callBookUpdateService(client protogen.BookControllerServiceClient, book *protogen.BookInfo) {
+func callBookUpdateService(client pbbook.BookControllerServiceClient, book *pbbook.BookInfo) {
 	// Update a Book
-	input := &protogen.BookUpdateInput{
+	input := &pbbook.UpdateBookRequest{
 		Id:          book.Id,
 		Title:       "Math Book C updated",
 		Description: "This is Math Book C",
 		Amount:      110,
 		Price:       12.0,
-		Category:    protogen.BookCategory_BOOK_CATEGORY_MATH,
-		Author: &protogen.Author{
+		Category:    pbbook.BookCategory_BOOK_CATEGORY_MATH,
+		Author: &pbbook.Author{
 			Name: "Author J",
 		},
 	}
@@ -214,10 +215,10 @@ func callBookUpdateService(client protogen.BookControllerServiceClient, book *pr
 	log.Printf("book update: %v\n", resp)
 }
 
-func callBookQueryService(client protogen.BookControllerServiceClient) {
+func callBookQueryService(client pbbook.BookControllerServiceClient) {
 	// Update a Book
-	input := &protogen.BookQueryInput{
-		Status:    protogen.BookStatus_BOOK_STATUS_ACTIVE.Enum(),
+	input := &pbbook.QueryBooksRequest{
+		Status:    pbbook.BookStatus_BOOK_STATUS_ACTIVE.Enum(),
 		PageSize:  10,
 		PageIndex: 1,
 	}

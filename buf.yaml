@@ -6,6 +6,7 @@ lint:
   use:
     - STANDARD
 modules:
-  - path: proto/v1
+  - path: proto # the root folder for proto files.
+    name: buf.build/grpc-boot-starter/lint
 deps:
   - buf.build/bufbuild/protovalidate
