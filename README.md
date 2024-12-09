@@ -71,11 +71,12 @@ sh start-client.sh
 |Distributed|-|-|
 |Testing|testify|OK|
 |Flow Control| Rate Limit, SHOULD be handled by Gateway |-|
-|API Versioning| PB having backward compatibility on model |-|
+|API Versioning| via versioning on proto files |-|
 |DB Migration|go-migrate on schema| OK |
 |Repository| as design with entity |OK|
 |CDI| wire | OK |
 |AuthZ| casbin | -|
+|API Specification| grpc-gateway, openapiv2 | OK |
 
 ## Reference
 

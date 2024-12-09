@@ -12,6 +12,7 @@ service BookController {
     rpc CreateBook (CreateBookRequest) returns (CreateBookResponse) {
         option (google.api.http) = {
             post: "/books/v1"
+            body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Create a book";
@@ -24,6 +25,7 @@ service BookController {
     rpc UpdateBook (UpdateBookRequest) returns (UpdateBookResponse){
         option (google.api.http) = {
             put: "/books/v1/{id}"
+            body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Update a book";

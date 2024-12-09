@@ -25,7 +25,13 @@ plugins:
     opt:
       - paths=source_relative
       - generate_unbound_methods=true
+      - allow_patch_feature=true
+      - allow_delete_body=true
   - remote: buf.build/grpc-ecosystem/openapiv2
     out: openapi
+    opt:
+      - generate_unbound_methods=true
+      - allow_patch_feature=true
+      - allow_delete_body=true
 inputs:
   - directory: proto

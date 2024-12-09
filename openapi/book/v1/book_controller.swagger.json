@@ -37,66 +37,12 @@
         },
         "parameters": [
           {
-            "name": "title",
-            "description": "The title of the book",
-            "in": "query",
+            "name": "body",
+            "in": "body",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "description": "The description of the book",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "amount",
-            "description": "The amount of the book",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "price",
-            "description": "The price of the book",
-            "in": "query",
-            "required": false,
-            "type": "number",
-            "format": "float"
-          },
-          {
-            "name": "category",
-            "description": "The category of the book",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "BOOK_CATEGORY_UNSPECIFIED",
-              "BOOK_CATEGORY_JAVA",
-              "BOOK_CATEGORY_GO",
-              "BOOK_CATEGORY_MATH"
-            ],
-            "default": "BOOK_CATEGORY_UNSPECIFIED"
-          },
-          {
-            "name": "author.name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "coverUrl",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/v1CreateBookRequest"
+            }
           }
         ],
         "tags": [
@@ -267,49 +213,12 @@
             "format": "int64"
           },
           {
-            "name": "title",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "amount",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "price",
-            "in": "query",
-            "required": false,
-            "type": "number",
-            "format": "float"
-          },
-          {
-            "name": "category",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "BOOK_CATEGORY_UNSPECIFIED",
-              "BOOK_CATEGORY_JAVA",
-              "BOOK_CATEGORY_GO",
-              "BOOK_CATEGORY_MATH"
-            ],
-            "default": "BOOK_CATEGORY_UNSPECIFIED"
-          },
-          {
-            "name": "author.name",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BookControllerUpdateBookBody"
+            }
           }
         ],
         "tags": [
@@ -319,6 +228,31 @@
     }
   },
   "definitions": {
+    "BookControllerUpdateBookBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "category": {
+          "$ref": "#/definitions/v1BookCategory"
+        },
+        "author": {
+          "$ref": "#/definitions/v1Author"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -351,9 +285,14 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "example": "John Mark",
+          "description": "The author's name of the book"
         }
-      }
+      },
+      "required": [
+        "name"
+      ]
     },
     "v1BookCategory": {
       "type": "string",
@@ -421,6 +360,55 @@
         "BOOK_STATUS_OFFLINE"
       ],
       "default": "BOOK_STATUS_UNSPECIFIED"
+    },
+    "v1CreateBookRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "Java Book",
+          "description": "The title of the book"
+        },
+        "description": {
+          "type": "string",
+          "example": "This is Book's description",
+          "description": "The description of the book"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "example": 100,
+          "description": "The amount of the book"
+        },
+        "price": {
+          "type": "number",
+          "format": "float",
+          "example": 12.34,
+          "description": "The price of the book"
+        },
+        "category": {
+          "$ref": "#/definitions/v1BookCategory",
+          "example": "BOOK_CATEGORY_JAVA",
+          "description": "The category of the book"
+        },
+        "author": {
+          "$ref": "#/definitions/v1Author",
+          "description": "The author of the book"
+        },
+        "email": {
+          "type": "string",
+          "example": "abc@example.com",
+          "description": "The email address of the book"
+        },
+        "coverUrl": {
+          "type": "string",
+          "example": "http://example.com/cover/1.png",
+          "description": "The cover url address of the book"
+        }
+      },
+      "required": [
+        "title"
+      ]
     },
     "v1CreateBookResponse": {
       "type": "object",

@@ -1,0 +1,1 @@
+buf dep update && buf generate && go run convert/convert.go

@@ -4,7 +4,6 @@ syntax = "proto3";
 package book.v1;
 
 import "google/api/field_behavior.proto";
-// import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "buf/validate/validate.proto";
@@ -30,7 +29,7 @@ message CreateBookRequest {
         (google.api.field_behavior) = REQUIRED,
         (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
             description: "The title of the book",
-            example: "gRPC Practices"
+            example: "\"Java Book\""
         },
         (buf.validate.field).string.min_len = 1,
         (buf.validate.field).string.max_len = 100
@@ -38,7 +37,7 @@ message CreateBookRequest {
     string description = 2 [
         (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
             description: "The description of the book",
-            example: "This is a book about gRPC"
+            example: "\"This is Book's description\""
         }
     ];
     uint32 amount = 3 [
@@ -58,12 +57,30 @@ message CreateBookRequest {
     BookCategory category = 5 [
         (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
             description: "The category of the book",
-            example: "JAVA"
+            example: "\"BOOK_CATEGORY_JAVA\""
         }
     ];
-    Author author = 6;
-    string email = 7 [(buf.validate.field).string.min_len = 0, (buf.validate.field).string.email = true];
-    string cover_url = 8 [(buf.validate.field).string.min_len = 0, (buf.validate.field).string.uri = true];
+    Author author = 6 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The author of the book",
+        }
+    ];
+    string email = 7 [
+        (buf.validate.field).string.min_len = 0, 
+        (buf.validate.field).string.email = true,
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The email address of the book",
+            example: "\"abc@example.com\""
+        }    
+    ];
+    string cover_url = 8 [
+        (buf.validate.field).string.min_len = 0, 
+        (buf.validate.field).string.uri = true,
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The cover url address of the book",
+            example: "\"http://example.com/cover/1.png\""
+        }     
+    ];
 }
 
 message CreateBookResponse {
