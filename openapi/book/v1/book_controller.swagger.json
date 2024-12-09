@@ -1,0 +1,510 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "book/v1/book_controller.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "BookController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/books/v1": {
+      "post": {
+        "summary": "Create a book",
+        "description": "Create a book via input fields",
+        "operationId": "createBook",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateBookResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "title",
+            "description": "The title of the book",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "description": "The description of the book",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "description": "The amount of the book",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "price",
+            "description": "The price of the book",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "format": "float"
+          },
+          {
+            "name": "category",
+            "description": "The category of the book",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "BOOK_CATEGORY_UNSPECIFIED",
+              "BOOK_CATEGORY_JAVA",
+              "BOOK_CATEGORY_GO",
+              "BOOK_CATEGORY_MATH"
+            ],
+            "default": "BOOK_CATEGORY_UNSPECIFIED"
+          },
+          {
+            "name": "author.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "coverUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BookController"
+        ]
+      }
+    },
+    "/books/v1/pagination/{pageSize}/{pageIndex}": {
+      "get": {
+        "summary": "Query books via criteria",
+        "description": "Query books via input fields",
+        "operationId": "queryBook",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QueryBooksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageIndex",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "BOOK_CATEGORY_UNSPECIFIED",
+              "BOOK_CATEGORY_JAVA",
+              "BOOK_CATEGORY_GO",
+              "BOOK_CATEGORY_MATH"
+            ],
+            "default": "BOOK_CATEGORY_UNSPECIFIED"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "BOOK_STATUS_UNSPECIFIED",
+              "BOOK_STATUS_CREATED",
+              "BOOK_STATUS_ACTIVE",
+              "BOOK_STATUS_OFFLINE"
+            ],
+            "default": "BOOK_STATUS_UNSPECIFIED"
+          },
+          {
+            "name": "cursorId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BookController"
+        ]
+      }
+    },
+    "/books/v1/{id}": {
+      "get": {
+        "summary": "Get a book",
+        "description": "Get a book via id",
+        "operationId": "getBook",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetBookResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BookController"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a book",
+        "description": "Delete a book via input fields",
+        "operationId": "deleteBook",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteBookResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BookController"
+        ]
+      },
+      "put": {
+        "summary": "Update a book",
+        "description": "Update a book via input fields",
+        "operationId": "updateBook",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateBookResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "price",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "format": "float"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "BOOK_CATEGORY_UNSPECIFIED",
+              "BOOK_CATEGORY_JAVA",
+              "BOOK_CATEGORY_GO",
+              "BOOK_CATEGORY_MATH"
+            ],
+            "default": "BOOK_CATEGORY_UNSPECIFIED"
+          },
+          {
+            "name": "author.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BookController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1Author": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1BookCategory": {
+      "type": "string",
+      "enum": [
+        "BOOK_CATEGORY_UNSPECIFIED",
+        "BOOK_CATEGORY_JAVA",
+        "BOOK_CATEGORY_GO",
+        "BOOK_CATEGORY_MATH"
+      ],
+      "default": "BOOK_CATEGORY_UNSPECIFIED"
+    },
+    "v1BookInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "author": {
+          "$ref": "#/definitions/v1Author"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "category": {
+          "$ref": "#/definitions/v1BookCategory"
+        },
+        "status": {
+          "$ref": "#/definitions/v1BookStatus"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleteTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1BookStatus": {
+      "type": "string",
+      "enum": [
+        "BOOK_STATUS_UNSPECIFIED",
+        "BOOK_STATUS_CREATED",
+        "BOOK_STATUS_ACTIVE",
+        "BOOK_STATUS_OFFLINE"
+      ],
+      "default": "BOOK_STATUS_UNSPECIFIED"
+    },
+    "v1CreateBookResponse": {
+      "type": "object",
+      "properties": {
+        "book": {
+          "$ref": "#/definitions/v1BookInfo"
+        },
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DeleteBookResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1GetBookResponse": {
+      "type": "object",
+      "properties": {
+        "book": {
+          "$ref": "#/definitions/v1BookInfo"
+        }
+      }
+    },
+    "v1Pagination": {
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pageIndex": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "totalPages": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "hasNext": {
+          "type": "boolean"
+        },
+        "hasPrevious": {
+          "type": "boolean"
+        },
+        "totalItems": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "v1QueryBooksResponse": {
+      "type": "object",
+      "properties": {
+        "books": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1BookInfo"
+          }
+        },
+        "pageInfo": {
+          "$ref": "#/definitions/v1Pagination"
+        }
+      }
+    },
+    "v1UpdateBookResponse": {
+      "type": "object",
+      "properties": {
+        "book": {
+          "$ref": "#/definitions/v1BookInfo"
+        },
+        "success": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

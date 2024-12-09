@@ -2,12 +2,70 @@ syntax = "proto3";
 
 package book.v1;
 
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
 import "book/v1/book.proto";
 
 service BookController {
-    rpc CreateBook (CreateBookRequest) returns (CreateBookResponse);
-    rpc UpdateBook (UpdateBookRequest) returns (UpdateBookResponse);
-    rpc DeleteBook (DeleteBookRequest) returns (DeleteBookResponse);
-    rpc GetBook (GetBookRequest) returns (GetBookResponse);
-    rpc QueryBooks (QueryBooksRequest) returns (QueryBooksResponse);
+    // create a book
+    rpc CreateBook (CreateBookRequest) returns (CreateBookResponse) {
+        option (google.api.http) = {
+            post: "/books/v1"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create a book";
+            description: "Create a book via input fields";
+            operation_id: "createBook";
+            tags: "BookController";
+        };
+    };
+    // update a book
+    rpc UpdateBook (UpdateBookRequest) returns (UpdateBookResponse){
+        option (google.api.http) = {
+            put: "/books/v1/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update a book";
+            description: "Update a book via input fields";
+            operation_id: "updateBook";
+            tags: "BookController";
+        };
+    };
+    // delete a book
+    rpc DeleteBook (DeleteBookRequest) returns (DeleteBookResponse){
+        option (google.api.http) = {
+            delete: "/books/v1/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete a book";
+            description: "Delete a book via input fields";
+            operation_id: "deleteBook";
+            tags: "BookController";
+        };
+    };
+    // get a book detail
+    rpc GetBook (GetBookRequest) returns (GetBookResponse){
+        option (google.api.http) = {
+            get: "/books/v1/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get a book";
+            description: "Get a book via id";
+            operation_id: "getBook";
+            tags: "BookController";
+        };
+    };
+    // query books via criteria
+    rpc QueryBooks (QueryBooksRequest) returns (QueryBooksResponse){
+        option (google.api.http) = {
+            get: "/books/v1/pagination/{page_size}/{page_index}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Query books via criteria";
+            description: "Query books via input fields";
+            operation_id: "queryBook";
+            tags: "BookController";
+        };
+    };
 }

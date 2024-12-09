@@ -3,6 +3,10 @@ syntax = "proto3";
 // package should match with the folder structure.
 package book.v1;
 
+import "google/api/field_behavior.proto";
+// import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import "book/v1/author.proto";
@@ -22,11 +26,41 @@ enum BookCategory {
 }
 
 message CreateBookRequest {
-    string title = 1 [(buf.validate.field).string.min_len = 1,(buf.validate.field).string.max_len = 100];
-    string description = 2;
-    uint32 amount = 3 [(buf.validate.field).uint32.gt = 1];
-    float price = 4 [(buf.validate.field).float.gt = 0];
-    BookCategory category = 5;
+    string title = 1 [
+        (google.api.field_behavior) = REQUIRED,
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The title of the book",
+            example: "gRPC Practices"
+        },
+        (buf.validate.field).string.min_len = 1,
+        (buf.validate.field).string.max_len = 100
+    ];
+    string description = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The description of the book",
+            example: "This is a book about gRPC"
+        }
+    ];
+    uint32 amount = 3 [
+        (buf.validate.field).uint32.gt = 1,
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The amount of the book",
+            example: "100"
+        }
+    ];
+    float price = 4 [
+        (buf.validate.field).float.gt = 0,
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The price of the book",
+            example: "12.34"
+        }
+    ];
+    BookCategory category = 5 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "The category of the book",
+            example: "JAVA"
+        }
+    ];
     Author author = 6;
     string email = 7 [(buf.validate.field).string.min_len = 0, (buf.validate.field).string.email = true];
     string cover_url = 8 [(buf.validate.field).string.min_len = 0, (buf.validate.field).string.uri = true];

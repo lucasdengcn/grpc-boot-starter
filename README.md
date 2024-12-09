@@ -128,11 +128,28 @@ Golangci-lint aggregates dozens of tools with hundreds of checks. Revive is one 
 git config core.hooksPath .git-hooks 
 ```
 
-## Buf build
+## Development Env
+
+### Go Requirements
+
+```shell
+go mod tidy
+go install \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+    google.golang.org/protobuf/cmd/protoc-gen-go \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
+```
+
+### Buf build
 
 Buf CLI is a great drop-in replacement for protoc
 
 ```shell
+# install CLI
+brew install bufbuild/buf/buf
+
 # update dependencies
 buf dep update
 
@@ -142,3 +159,9 @@ buf lint
 # generate code
 buf generate
 ```
+
+[plugins](https://buf.build/plugins)
+
+### OpenAPI
+
+[Open API Spec](https://github.com/getkin/kin-openapi)

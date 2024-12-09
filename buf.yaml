@@ -11,3 +11,5 @@ modules:
     name: buf.build/grpc-boot-starter/lint
 deps:
   - buf.build/bufbuild/protovalidate
+  #- buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway

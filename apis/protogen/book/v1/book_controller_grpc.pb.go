@@ -30,10 +30,15 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BookControllerClient interface {
+	// create a book
 	CreateBook(ctx context.Context, in *CreateBookRequest, opts ...grpc.CallOption) (*CreateBookResponse, error)
+	// update a book
 	UpdateBook(ctx context.Context, in *UpdateBookRequest, opts ...grpc.CallOption) (*UpdateBookResponse, error)
+	// delete a book
 	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*DeleteBookResponse, error)
+	// get a book detail
 	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*GetBookResponse, error)
+	// query books via criteria
 	QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpc.CallOption) (*QueryBooksResponse, error)
 }
 
@@ -99,10 +104,15 @@ func (c *bookControllerClient) QueryBooks(ctx context.Context, in *QueryBooksReq
 // All implementations must embed UnimplementedBookControllerServer
 // for forward compatibility.
 type BookControllerServer interface {
+	// create a book
 	CreateBook(context.Context, *CreateBookRequest) (*CreateBookResponse, error)
+	// update a book
 	UpdateBook(context.Context, *UpdateBookRequest) (*UpdateBookResponse, error)
+	// delete a book
 	DeleteBook(context.Context, *DeleteBookRequest) (*DeleteBookResponse, error)
+	// get a book detail
 	GetBook(context.Context, *GetBookRequest) (*GetBookResponse, error)
+	// query books via criteria
 	QueryBooks(context.Context, *QueryBooksRequest) (*QueryBooksResponse, error)
 	mustEmbedUnimplementedBookControllerServer()
 }
