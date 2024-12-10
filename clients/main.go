@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	pbbook "grpc-boot-starter/apis/protogen/book/v1"
-	pbhello "grpc-boot-starter/apis/protogen/hello/v1"
+	pbbook "grpc-boot-starter/api/protogen/book/v1"
+	pbhello "grpc-boot-starter/api/protogen/hello/v1"
 	"log"
 	"path/filepath"
 	"runtime"

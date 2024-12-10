@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	protogen "grpc-boot-starter/apis/protogen/book/v1"
+	protogen "grpc-boot-starter/api/protogen/book/v1"
 	"grpc-boot-starter/core/config"
+	"grpc-boot-starter/core/migration"
 	"grpc-boot-starter/core/security"
 	"grpc-boot-starter/infra/db"
-	"grpc-boot-starter/migration"
 	"grpc-boot-starter/persistence/repository"
 	"testing"
 

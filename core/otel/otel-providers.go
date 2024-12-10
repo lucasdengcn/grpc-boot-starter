@@ -195,9 +195,9 @@ func InitProviders(ctx context.Context) {
 	}
 }
 
-func Shutdown(ctx context.Context) error {
+func Shutdown(ctx context.Context) {
 	if len(shutdownFuncs) == 0 {
-		return nil
+		return
 	}
 	var err error
 	for _, fn := range shutdownFuncs {
@@ -209,5 +209,4 @@ func Shutdown(ctx context.Context) error {
 	} else {
 		log.Printf("OTEL Shutdown.")
 	}
-	return err
 }

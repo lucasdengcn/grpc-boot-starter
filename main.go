@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/logging"
+	"grpc-boot-starter/core/migration"
 	"grpc-boot-starter/core/otel"
 	"grpc-boot-starter/infra/db"
-	"grpc-boot-starter/migration"
 	"grpc-boot-starter/server"
 	"os"
 	"os/signal"
@@ -44,11 +44,17 @@ func main() {
 	//
 	fmt.Printf("running in %v, env: %v\n", workingPath, envName)
 	// load configuration
-	config.LoadConf(workingPath, envName)
+	err := config.LoadConf(workingPath, envName)
+	if err != nil {
+		os.Exit(1)
+	}
 	// init global logger
 	logging.InitLogging()
 	// prepare db connection pool
-	db.ConnectDB()
+	_, err = db.ConnectDB()
+	if err != nil {
+		os.Exit(1)
+	}
 	// migrate db schemas
 	migration.Migrate()
 	// init OTEL tracing

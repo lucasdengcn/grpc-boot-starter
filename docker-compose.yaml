@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  grpc-service-51:
+    #build:
+    #  context: .
+    image: localdev/grpc-api-service:latest
+    environment:
+      - APP_ENV=docker
+      - GRPC_SERVER_PORT=50051
+    ports:
+      - "50051:50051"
+    networks:
+      - grpc-api-network
+
+  grpc-service-52:
+    #build:
+    #  context: .
+    image: localdev/grpc-api-service:latest
+    environment:
+      - APP_ENV=docker
+      - GRPC_SERVER_PORT=50052
+    ports:
+      - "50052:50052"
+    networks:
+      - grpc-api-network
+
+networks:
+  grpc-api-network:
+    name: local_bridge
+    external: true

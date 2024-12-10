@@ -2,9 +2,9 @@ package server
 
 import (
 	"crypto/tls"
-	"grpc-boot-starter/apis/controller"
-	pbbook "grpc-boot-starter/apis/protogen/book/v1"
-	pbhello "grpc-boot-starter/apis/protogen/hello/v1"
+	"grpc-boot-starter/api/controller"
+	pbbook "grpc-boot-starter/api/protogen/book/v1"
+	pbhello "grpc-boot-starter/api/protogen/hello/v1"
 	"grpc-boot-starter/core/config"
 	"grpc-boot-starter/core/interceptor"
 	"grpc-boot-starter/core/otel"

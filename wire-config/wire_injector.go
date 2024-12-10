@@ -1,7 +1,7 @@
 package server
 
 import (
-	"grpc-boot-starter/apis/controller"
+	"grpc-boot-starter/api/controller"
 	"grpc-boot-starter/infra/db"
 	"grpc-boot-starter/persistence/repository"
 	"grpc-boot-starter/service"

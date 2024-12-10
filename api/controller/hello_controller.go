@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	pb "grpc-boot-starter/apis/protogen/hello/v1"
+	pb "grpc-boot-starter/api/protogen/hello/v1"
 	"log"
 )
 

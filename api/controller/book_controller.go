@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	pbbook "grpc-boot-starter/apis/protogen/book/v1"
+	pbbook "grpc-boot-starter/api/protogen/book/v1"
 	"grpc-boot-starter/core/exception"
 	"grpc-boot-starter/core/logging"
 	"grpc-boot-starter/infra/db"

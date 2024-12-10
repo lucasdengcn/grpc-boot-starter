@@ -10,18 +10,18 @@ managed:
       module: buf.build/grpc-ecosystem/grpc-gateway
   override:
     - file_option: go_package_prefix
-      value: grpc-boot-starter/apis/protogen
+      value: grpc-boot-starter/api/protogen
 plugins:
   - remote: buf.build/grpc/go
-    out: apis/protogen
+    out: api/protogen
     opt:
       - paths=source_relative
   - remote: buf.build/protocolbuffers/go
-    out: apis/protogen
+    out: api/protogen
     opt: 
       - paths=source_relative
   - remote: buf.build/grpc-ecosystem/gateway
-    out: apis/protogen
+    out: api/protogen
     opt:
       - paths=source_relative
       - generate_unbound_methods=true

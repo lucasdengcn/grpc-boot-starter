@@ -3,7 +3,7 @@ package prototest
 import (
 	"errors"
 	"fmt"
-	pb "grpc-boot-starter/apis/protogen/book/v1"
+	pb "grpc-boot-starter/api/protogen/book/v1"
 	"testing"
 
 	"github.com/bufbuild/protovalidate-go"

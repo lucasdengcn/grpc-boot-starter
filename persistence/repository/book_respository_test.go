@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"grpc-boot-starter/core/config"
+	"grpc-boot-starter/core/migration"
 	"grpc-boot-starter/infra/db"
-	"grpc-boot-starter/migration"
 	"grpc-boot-starter/persistence/entity"
 	"testing"
 
